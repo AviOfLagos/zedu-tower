@@ -1,0 +1,1798 @@
+<title>Zedu Tower</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: app shell = top bar / [floor rail | stage | inspector]. Stage holds two views of one simulation: tower cutaway and top-down floor plan. Desktop and tablet only. */
+:root{
+  --paper:#EFF2EF; --card:#FFFFFF; --ink:#1B2320; --muted:#5D6964; --line:#D6DDD8; --chip:#E6EBE7; --hover:#F2F5F3;
+  --accent:#17695A; --accent-soft:#D3E9E2; --accent-ink:#FFFFFF; --signal:#B97E16;
+  --ok:#2E9E68; --away:#D49A2C; --focus:#C9503C; --off:#98A19C;
+  --sky1:#C3D7E3; --sky2:#E9EFEB; --city:#A9BAC5; --cityWin:#DCE6EC;
+  --frame:#2B3431; --shaft:#38423E; --slab:#4A5550; --slabTop:#6C7772; --mullion:#59645F; --car:#D3D9D5;
+  --wall-office:#E9E1D5; --wall-team:#E2E7E1; --wall-meet:#D9E2E8; --wall-cafe:#EEDFCB; --wall-lobby:#E6E2D9; --wall-base:#CBCEC7; --wall-studio:#ECE4E6;
+  --floorwood:#B48B66; --floordark:#8E6B4D; --desk:#6A5644; --desktop:#7E6852; --screen:#2A3943; --glow:#9AD2E0; --leaf:#4C8A58; --leaf2:#3F7549; --pot:#C67852; --sofa:#7C91A4; --counter:#88684C; --paperwhite:#F8FAF8;
+  --earth:#6A5949; --earth2:#594A3D; --street:#7B847F; --blind:#D2CABA;
+  --plan-floor:#F4F1EA; --plan-wood:#E7D9C4; --plan-carpet:#DCE3E8; --plan-tile:#EAE6DF; --plan-corr:#E3E6E2; --plan-wall:#3B4541; --plan-glass:#9CC3D6; --plan-furn:#CBBBA4; --plan-furn2:#A9B6C2;
+  --font-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --shadow:0 12px 32px rgba(18,28,24,.16),0 1px 3px rgba(18,28,24,.12);
+  --rail:208px; --insp:340px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121715; --card:#1A211E; --ink:#E5EBE7; --muted:#9BA7A1; --line:#2D3733; --chip:#242D29; --hover:#202824;
+  --accent:#43B89D; --accent-soft:#1E3B33; --accent-ink:#06140F; --signal:#E3A944;
+  --sky1:#0C1626; --sky2:#243047; --city:#1B2533; --cityWin:#C9A55C;
+  --frame:#0D1211; --shaft:#1B2320; --slab:#29332F; --slabTop:#3B4642; --mullion:#3A4541; --car:#4A524E;
+  --wall-office:#4A3F34; --wall-team:#3A413B; --wall-meet:#343F49; --wall-cafe:#523E2C; --wall-lobby:#48443B; --wall-base:#2D312E; --wall-studio:#46393E;
+  --floorwood:#6A4D37; --floordark:#4E3828; --desk:#2E251D; --desktop:#3E3228; --screen:#0E161B; --glow:#6FC0D5; --leaf:#3C774A; --leaf2:#30613C; --pot:#985A3D; --sofa:#4D6072; --counter:#5A4431; --paperwhite:#D9DED9;
+  --earth:#2C241D; --earth2:#231D17; --street:#383F3B; --blind:#6E6656;
+  --plan-floor:#1E2421; --plan-wood:#3A3128; --plan-carpet:#26303A; --plan-tile:#2E2B27; --plan-corr:#232A27; --plan-wall:#8C9893; --plan-glass:#4F7F96; --plan-furn:#5A4E40; --plan-furn2:#46525E;
+  --shadow:0 12px 32px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.4); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#121715; --card:#1A211E; --ink:#E5EBE7; --muted:#9BA7A1; --line:#2D3733; --chip:#242D29; --hover:#202824;
+  --accent:#43B89D; --accent-soft:#1E3B33; --accent-ink:#06140F; --signal:#E3A944;
+  --sky1:#0C1626; --sky2:#243047; --city:#1B2533; --cityWin:#C9A55C;
+  --frame:#0D1211; --shaft:#1B2320; --slab:#29332F; --slabTop:#3B4642; --mullion:#3A4541; --car:#4A524E;
+  --wall-office:#4A3F34; --wall-team:#3A413B; --wall-meet:#343F49; --wall-cafe:#523E2C; --wall-lobby:#48443B; --wall-base:#2D312E; --wall-studio:#46393E;
+  --floorwood:#6A4D37; --floordark:#4E3828; --desk:#2E251D; --desktop:#3E3228; --screen:#0E161B; --glow:#6FC0D5; --leaf:#3C774A; --leaf2:#30613C; --pot:#985A3D; --sofa:#4D6072; --counter:#5A4431; --paperwhite:#D9DED9;
+  --earth:#2C241D; --earth2:#231D17; --street:#383F3B; --blind:#6E6656;
+  --plan-floor:#1E2421; --plan-wood:#3A3128; --plan-carpet:#26303A; --plan-tile:#2E2B27; --plan-corr:#232A27; --plan-wall:#8C9893; --plan-glass:#4F7F96; --plan-furn:#5A4E40; --plan-furn2:#46525E;
+  --shadow:0 12px 32px rgba(0,0,0,.45),0 1px 3px rgba(0,0,0,.4); color-scheme:dark}
+
+html,body{height:100%;margin:0}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+svg{display:block}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr}
+.main{display:grid;grid-template-columns:var(--rail) 1fr var(--insp);min-height:0}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--card);border-bottom:1px solid var(--line);position:relative;z-index:40}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{width:30px;height:30px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.brand b{font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:-.01em;display:block;line-height:1.1}
+.brand span{font-size:12px;color:var(--muted);white-space:nowrap}
+.seg{display:flex;background:var(--chip);border-radius:8px;padding:3px;gap:2px;flex:none}
+.seg button{border:0;background:transparent;padding:5px 10px;border-radius:6px;font-size:12.5px;font-weight:600;color:var(--muted);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.seg button svg{width:14px;height:14px}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.search{position:relative;flex:1;max-width:340px;min-width:140px}
+.search input{width:100%;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:9px;padding:7px 10px 7px 30px;font:inherit;font-size:13px}
+.search svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--muted)}
+.search kbd{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-family:var(--font-mono);font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px}
+.qres{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);padding:4px;display:flex;flex-direction:column;max-height:320px;overflow:auto}
+.qres button{border:0;background:transparent;text-align:left;padding:7px 9px;border-radius:7px;font-size:13px;display:flex;gap:8px;align-items:center}
+.qres button:hover,.qres button.on{background:var(--hover)}
+.qres small{color:var(--muted);margin-left:auto;font-size:11.5px}
+.clock{font-family:var(--font-mono);font-size:13px;color:var(--muted);flex:none}
+.spacer{flex:1}
+.held{border:0;background:color-mix(in srgb,var(--focus) 14%,transparent);color:var(--focus);font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;flex:none}
+.testbtn{border:0;background:var(--ink);color:var(--paper);border-radius:8px;padding:7px 11px;font-size:12.5px;font-weight:600;display:flex;gap:6px;align-items:center;flex:none}
+.testbtn svg{width:14px;height:14px}
+.guide{background:var(--chip);color:var(--ink);text-decoration:none}
+
+/* floor rail */
+.rail{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.rail h3{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 14px 6px;font-weight:700}
+.floors{display:flex;flex-direction:column;gap:2px;padding:0 8px 8px;overflow:auto}
+.fl{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:8px;padding:7px 6px;border-radius:9px;border:0;background:transparent;text-align:left;width:100%}
+.fl:hover{background:var(--hover)}
+.fl.cur{background:var(--accent-soft)}
+.fl .code{font-family:var(--font-display);font-weight:700;font-size:15px;text-align:center;background:var(--chip);border-radius:6px;padding:3px 0}
+.fl.cur .code{background:var(--accent);color:var(--accent-ink)}
+.fl .nm{display:flex;flex-direction:column;min-width:0}
+.fl .nm b{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl .nm span{display:flex;gap:3px;margin-top:3px;min-height:7px}
+.fl .nm span i{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.fl .nm span i.away{background:var(--away)}.fl .nm span i.focus{background:var(--focus)}
+.fl .ur{width:8px;height:8px;border-radius:50%;background:var(--focus)}
+.railfoot{margin-top:auto;padding:10px 14px 14px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.45}
+.railfoot kbd{font-family:var(--font-mono);font-size:10.5px;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+
+/* stage */
+#stage{position:relative;overflow:hidden;touch-action:none;cursor:grab;background:var(--sky2);min-width:0}
+#stage.dragging{cursor:grabbing}
+#stage.planmode{background:var(--paper)}
+#world,#plan{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform;--inv:1}
+#plan[hidden],#world[hidden]{display:none!important}
+.layer{position:absolute;left:0;top:0}
+.abs{position:absolute}
+
+/* tower scene */
+.sky{background:linear-gradient(var(--sky1),var(--sky2))}
+.bldg{position:absolute;background-color:var(--city);background-image:linear-gradient(90deg,transparent 0 7px,var(--cityWin) 7px 11px,transparent 11px),linear-gradient(transparent 0 9px,var(--city) 9px 18px);background-size:18px 18px;opacity:.38;filter:saturate(.6)}
+.earth{background:linear-gradient(var(--earth),var(--earth2))}
+.street{background:var(--street)}
+.tower{background:var(--frame);border-radius:6px 6px 0 0;box-shadow:0 30px 60px rgba(0,0,0,.18)}
+.slab{background:linear-gradient(var(--slabTop) 0 2px,var(--slab) 2px)}
+.shaft{background:var(--shaft)}
+.sdoor{position:absolute;width:44px;background:color-mix(in srgb,var(--car) 30%,var(--shaft));border-radius:2px}
+.ftag{position:absolute;font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--paperwhite);opacity:.55;pointer-events:none}
+.tree{position:absolute;width:26px;height:44px;opacity:.85}
+.tree::before{content:"";position:absolute;left:11px;bottom:0;width:4px;height:16px;background:var(--desk)}
+.tree::after{content:"";position:absolute;left:0;bottom:12px;width:26px;height:32px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--leaf),var(--leaf2))}
+
+.room{position:absolute;overflow:hidden;background:var(--wall-office);box-shadow:inset 3px 0 0 var(--mullion),inset -10px 0 14px -10px rgba(0,0,0,.18)}
+.room::before{content:"";position:absolute;inset:0 0 auto;height:16px;background:linear-gradient(rgba(0,0,0,.16),transparent);pointer-events:none}
+.room::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:linear-gradient(var(--floordark) 0 2px,var(--floorwood) 2px)}
+.room.t-team{background-color:var(--wall-team)}.room.t-meeting{background-color:var(--wall-meet)}.room.t-cafe{background-color:var(--wall-cafe)}
+.room.t-reception,.room.t-lounge{background-color:var(--wall-lobby)}.room.t-server,.room.t-archive,.room.t-storage{background-color:var(--wall-base)}
+.room.t-studio{background-color:var(--wall-studio)}.room.t-booth{background-color:var(--wall-team)}
+.room.sel{box-shadow:inset 3px 0 0 var(--mullion),inset 0 0 0 3px var(--accent)}
+.room.huddle{box-shadow:inset 3px 0 0 var(--mullion),inset 0 0 0 3px var(--signal)}
+.rlabel{position:absolute;left:12px;top:9px;font-size:11px;line-height:1.25;opacity:0;transition:opacity .25s;display:flex;flex-direction:column;z-index:2;pointer-events:none}
+.rlabel b{font-weight:700;font-size:12px;display:flex;align-items:center;gap:4px}
+.rlabel b svg{width:11px;height:11px}
+.rlabel span{color:var(--muted);font-family:var(--font-mono);font-size:10px}
+.rlabel em{font-style:normal;color:var(--focus);font-weight:700;font-size:10px}
+.room:hover .rlabel,.room.sel .rlabel,.room.live .rlabel,#world.close .rlabel{opacity:1}
+.front{position:absolute;overflow:hidden;pointer-events:none}
+.fx{position:absolute;bottom:10px;transform:translateX(-50%)}
+.desk{width:64px;height:28px;border-top:5px solid var(--desktop);filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+.desk::before,.desk::after{content:"";position:absolute;top:0;width:3px;height:23px;background:var(--desk)}
+.desk::before{left:4px}.desk::after{right:4px}
+.mon{bottom:39px;width:24px;height:17px;background:linear-gradient(165deg,var(--glow) 0 22%,var(--screen) 23%);border-radius:2px;border:2px solid var(--frame)}
+.mon::after{content:"";position:absolute;left:50%;bottom:-7px;width:3px;height:5px;background:var(--frame);transform:translateX(-50%)}
+.mon.ping{animation:ping 1.2s ease 2}
+@keyframes ping{50%{box-shadow:0 0 0 4px color-mix(in srgb,var(--signal) 60%,transparent),0 0 18px var(--signal)}}
+.chair{width:18px;height:28px;border-radius:7px 7px 2px 2px;background:linear-gradient(90deg,var(--sofa),color-mix(in srgb,var(--sofa) 75%,#000))}
+.plant{width:22px;height:40px}
+.plant::before{content:"";position:absolute;left:4px;bottom:0;width:14px;height:13px;background:var(--pot);border-radius:2px 2px 4px 4px}
+.plant::after{content:"";position:absolute;left:0;bottom:11px;width:22px;height:28px;border-radius:50% 50% 45% 45%;background:radial-gradient(circle at 35% 30%,var(--leaf),var(--leaf2))}
+.shelf{bottom:auto;top:32px;width:56px;height:42px;background:linear-gradient(transparent 0 19px,var(--desk) 19px 22px,transparent 22px 39px,var(--desk) 39px),repeating-linear-gradient(90deg,var(--pot) 0 5px,var(--sofa) 5px 9px,var(--signal) 9px 12px,transparent 12px 15px);opacity:.85}
+.art{bottom:auto;top:36px;width:32px;height:24px;border:3px solid var(--paperwhite);background:linear-gradient(135deg,var(--sofa) 0 45%,var(--accent) 45%);opacity:.8}
+.wb{bottom:auto;top:28px;width:96px;height:48px;background:var(--paperwhite);border:3px solid var(--mullion);background-image:linear-gradient(transparent 14px,var(--sofa) 14px 16px,transparent 16px 26px,var(--pot) 26px 28px,transparent 28px);background-size:60% 100%;background-repeat:no-repeat;background-position:10px 0}
+.table{height:24px;border-top:6px solid var(--desktop)}
+.table::before,.table::after{content:"";position:absolute;top:0;width:4px;height:18px;background:var(--desk)}
+.table::before{left:10%}.table::after{right:10%}
+.tv{bottom:auto;top:22px;width:104px;height:56px;background:var(--screen);border:3px solid var(--frame);border-radius:3px;display:flex;flex-wrap:wrap;gap:3px;padding:4px;align-content:flex-start}
+.tile{width:30px;height:21px;border-radius:3px;background:var(--accent);color:var(--accent-ink);font-size:8px;font-weight:700;display:grid;place-items:center}
+.counter{width:160px;height:42px;background:var(--counter);border-radius:4px 4px 0 0;border-top:5px solid var(--desktop)}
+.ctable{width:30px;height:24px;border-top:4px solid var(--desktop)}
+.ctable::after{content:"";position:absolute;left:13px;top:0;width:4px;height:20px;background:var(--desk)}
+.sofa{width:78px;height:26px;background:linear-gradient(var(--sofa),color-mix(in srgb,var(--sofa) 78%,#000));border-radius:9px 9px 3px 3px}
+.rack{width:38px;height:104px;background-color:#1C2421;border-radius:3px;background-image:radial-gradient(circle,#5FE08A 1.3px,transparent 1.8px);background-size:9px 12px}
+.booth{width:66px;height:112px;border:3px solid var(--mullion);border-bottom:0;border-radius:8px 8px 0 0;background:color-mix(in srgb,var(--glow) 16%,transparent)}
+.lamp{bottom:auto;top:0;width:2px;height:20px;background:var(--mullion)}
+.lamp::after{content:"";position:absolute;left:-6px;top:18px;width:14px;height:8px;border-radius:8px 8px 2px 2px;background:var(--signal)}
+.lamp::before{content:"";position:absolute;left:-40px;top:24px;width:82px;height:70px;background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--signal) 22%,transparent),transparent 70%);pointer-events:none}
+.logo{bottom:auto;top:30px;font-family:var(--font-display);font-weight:700;font-size:30px;letter-spacing:-.02em;color:var(--accent)}
+.boxes{width:60px;height:40px;background:linear-gradient(90deg,var(--counter) 0 48%,transparent 48% 52%,var(--pot) 52%);border-radius:2px}
+.bike{width:54px;height:24px;background:radial-gradient(circle at 12px 12px,transparent 7px,var(--frame) 7px 10px,transparent 10px),radial-gradient(circle at 42px 12px,transparent 7px,var(--frame) 7px 10px,transparent 10px)}
+.pad{width:30px;height:5px;border-radius:3px;background:var(--accent);opacity:.5}
+
+.frost{position:absolute;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);background:color-mix(in srgb,var(--paperwhite) 35%,transparent);display:grid;place-items:center;pointer-events:none}
+.frost div{display:flex;align-items:center;gap:6px;background:var(--card);padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:600;box-shadow:var(--shadow)}
+.frost svg{width:12px;height:12px}
+.blinds{position:absolute;background:repeating-linear-gradient(var(--blind) 0 7px,color-mix(in srgb,var(--blind) 72%,var(--frame)) 7px 9px);display:grid;place-items:center;pointer-events:none;transition:transform .5s ease;transform-origin:top;opacity:.96}
+.blinds[hidden]{display:grid!important;transform:scaleY(0)}
+.blinds span{background:var(--card);color:var(--focus);font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px}
+.note{position:absolute;width:20px;height:14px;color:var(--signal);pointer-events:none}
+.plate{position:absolute;font-size:10px;font-weight:700;color:var(--muted);background:var(--card);padding:2px 7px;border-radius:4px;transform:translateX(-50%);pointer-events:none}
+
+.car{position:absolute;width:52px;border:2px solid var(--mullion);background:var(--car);border-radius:3px;overflow:hidden}
+.car::before,.car::after{content:"";position:absolute;top:0;bottom:0;width:50%;background:color-mix(in srgb,var(--car) 72%,var(--frame));transition:transform .3s ease}
+.car::before{left:0;border-right:1px solid var(--mullion)}.car::after{right:0}
+.car.open::before{transform:translateX(-92%)}.car.open::after{transform:translateX(92%)}
+
+/* people, side view */
+.actor{position:absolute;left:0;top:0;width:24px;height:56px;cursor:pointer}
+.actor .body{width:24px;height:56px}
+.actor .body svg{transition:transform .25s ease}
+.actor.sit .body svg{transform:translateY(9px)}
+.actor.sit .legs{opacity:0}
+.actor.bot{width:24px;height:28px}
+.actor.bot .body{width:24px;height:28px;animation:hover 1.4s ease-in-out infinite alternate}
+@keyframes hover{to{transform:translateY(-3px)}}
+.actor.walking .l1{animation:stepA .36s ease-in-out infinite alternate}
+.actor.walking .l2{animation:stepA .36s ease-in-out infinite alternate-reverse}
+.actor.walking .a1{animation:stepA .36s ease-in-out infinite alternate-reverse}
+.leg,.arm{transform-box:fill-box;transform-origin:50% 6%}
+@keyframes stepA{from{transform:rotate(18deg)}to{transform:rotate(-18deg)}}
+.actor .phone,.actor .headset{display:none}
+.actor.onphone .phone{display:inline}
+.actor.onphone .a2{transform:rotate(-158deg)}
+.actor.audio .headset{display:inline}
+.actor::after{content:"";position:absolute;left:50%;bottom:-2px;width:40px;height:12px;margin-left:-20px;border-radius:50%;border:2px solid var(--signal);opacity:0;pointer-events:none}
+.actor.ringing::after{animation:ring 1s ease-out infinite}
+.actor.pinged::after{border-color:var(--accent);animation:ring 1s ease-out 2}
+@keyframes ring{from{opacity:.9;transform:scale(.4)}to{opacity:0;transform:scale(1.6)}}
+.actor.sel::before{content:"";position:absolute;left:-7px;right:-7px;bottom:-4px;height:7px;border-radius:50%;background:color-mix(in srgb,var(--accent) 50%,transparent)}
+.tag{position:absolute;left:50%;top:100%;margin-top:4px;transform:translateX(-50%) scale(min(var(--inv),1.6));transform-origin:top center;display:none;align-items:center;gap:4px;font-size:10px;font-weight:700;white-space:nowrap;background:var(--card);color:var(--ink);padding:1px 6px 1px 4px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2);pointer-events:none}
+.tag .dot{width:6px;height:6px}
+.actor:hover .tag,.actor.me .tag,.actor.sel .tag,#world.close .actor:not(.bot) .tag{display:flex}
+.talk{position:absolute;left:100%;top:4px;width:12px;height:12px;display:none;color:var(--muted)}
+.actor.talking .talk{display:block;animation:talk .8s ease-in-out infinite alternate}
+@keyframes talk{to{opacity:.3}}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);display:inline-block;flex:none}
+.dot.away{background:var(--away)}.dot.focus{background:var(--focus)}.dot.offline{background:var(--off)}
+
+#links path{fill:none;stroke-width:2.5;stroke-linecap:round;opacity:.75}
+#links path.ring{stroke:var(--signal);stroke-dasharray:5 8;animation:dash .6s linear infinite}
+#links path.call{stroke:var(--accent);stroke-dasharray:2 7;animation:dash 1s linear infinite}
+#links path.audio{stroke:var(--accent);stroke-dasharray:9 7;animation:dash 1.4s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-28}}
+
+/* floor plan */
+.pfloor{position:absolute;background:var(--plan-floor);border:8px solid var(--plan-wall);border-radius:6px;box-shadow:var(--shadow)}
+.pglass{position:absolute;height:4px;background:var(--plan-glass);opacity:.8}
+.pcorr{position:absolute;background:var(--plan-corr)}
+.pcore{position:absolute;background:color-mix(in srgb,var(--plan-wall) 14%,var(--plan-floor));border:3px solid var(--plan-wall)}
+.plift{position:absolute;border:2px solid var(--plan-wall);background:var(--plan-corr);display:grid;place-items:center;font-size:9px;font-weight:700;color:var(--muted)}
+.pstairs{position:absolute;border:2px solid var(--plan-wall);background:repeating-linear-gradient(var(--plan-corr) 0 7px,var(--plan-wall) 7px 8px);opacity:.7}
+.proom{position:absolute;border:4px solid var(--plan-wall);background:var(--plan-floor);cursor:pointer}
+.proom.m-wood{background:repeating-linear-gradient(90deg,var(--plan-wood) 0 22px,color-mix(in srgb,var(--plan-wood) 90%,#000) 22px 23px)}
+.proom.m-carpet{background:var(--plan-carpet)}
+.proom.m-tile{background:repeating-conic-gradient(var(--plan-tile) 0 25%,color-mix(in srgb,var(--plan-tile) 92%,#000) 0 50%) 0 0/28px 28px}
+.proom.sel{outline:3px solid var(--accent);outline-offset:-3px}
+.proom.dnd{background-image:linear-gradient(color-mix(in srgb,var(--focus) 10%,transparent),color-mix(in srgb,var(--focus) 10%,transparent))}
+.pdoor{position:absolute;bottom:-4px;width:36px;height:4px;background:var(--plan-corr)}
+.pdoor::after{content:"";position:absolute;left:0;bottom:4px;width:30px;height:30px;border-left:2px solid var(--plan-wall);border-top:1.5px dashed color-mix(in srgb,var(--plan-wall) 50%,transparent);border-radius:100% 0 0 0;opacity:.55}
+.proom.dnd .pdoor{background:var(--focus)}
+.pname{position:absolute;left:10px;top:8px;font-size:12px;font-weight:700;display:flex;flex-direction:column;line-height:1.25;pointer-events:none;background:color-mix(in srgb,var(--card) 88%,transparent);padding:3px 7px;border-radius:6px;z-index:1}
+.pname span{font-family:var(--font-mono);font-size:10px;color:var(--muted);font-weight:500}
+.pname em{font-style:normal;color:var(--focus);font-size:10px}
+.pf{position:absolute;pointer-events:none}
+.pf.desk{background:var(--plan-furn);border-radius:3px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.pf.desk::after{content:"";position:absolute;left:30%;right:30%;top:4px;height:3px;border-radius:2px;background:var(--screen)}
+.pf.chair{width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:6px;background:var(--plan-furn2)}
+.pf.table{background:var(--plan-furn);border-radius:22px;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.pf.round{border-radius:50%;background:var(--plan-furn)}
+.pf.sofa{background:var(--plan-furn2);border-radius:8px}
+.pf.shelf{background:repeating-linear-gradient(var(--plan-furn) 0 6px,color-mix(in srgb,var(--plan-furn) 70%,#000) 6px 7px);border-radius:2px}
+.pf.plant{width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;background:radial-gradient(circle at 40% 35%,var(--leaf),var(--leaf2))}
+.pf.rug{border-radius:10px;background:color-mix(in srgb,var(--plan-furn2) 35%,transparent)}
+.pf.screen{background:var(--screen);border-radius:2px;display:flex;gap:3px;padding:2px 4px;align-items:center}
+.pf.rack{background:#1C2421;border-radius:2px}
+.pf.booth{border:2px solid var(--plan-wall);background:color-mix(in srgb,var(--plan-glass) 25%,transparent);border-radius:4px}
+.pf.counter{background:var(--plan-furn);border-radius:4px}
+.pf.wc{font-size:10px;font-weight:700;color:var(--muted);display:grid;place-items:center;border:2px solid var(--plan-wall);background:var(--plan-corr)}
+.pfrost{position:absolute;backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);background:color-mix(in srgb,var(--plan-floor) 55%,transparent);display:grid;place-items:center;pointer-events:none;z-index:3}
+.pfrost div{display:flex;align-items:center;gap:6px;background:var(--card);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;box-shadow:var(--shadow)}
+.pfrost svg{width:12px;height:12px}
+.ptok{position:absolute;left:0;top:0;width:34px;height:34px;margin:-17px 0 0 -17px;transition:transform .5s ease;cursor:pointer;z-index:2}
+.ptok .rot{width:34px;height:34px;transition:transform .4s ease}
+.ptok .pl{position:absolute;left:50%;top:100%;transform:translateX(-50%);font-size:10.5px;font-weight:700;white-space:nowrap;background:var(--card);padding:0 6px;border-radius:999px;box-shadow:0 1px 3px rgba(0,0,0,.2);display:flex;align-items:center;gap:4px;margin-top:-2px}
+.ptok .pl .dot{width:6px;height:6px}
+.ptok.me .pl{background:var(--accent);color:var(--accent-ink)}
+.ptok.bot{width:22px;height:22px;margin:-11px 0 0 -11px}
+.ptok.bot .rot{width:22px;height:22px}
+.ptok::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:2px solid transparent;pointer-events:none}
+.ptok.oncall::after{border-color:var(--accent);animation:ring2 1.4s ease-out infinite}
+.ptok.ringing::after{border-color:var(--signal);animation:ring2 .8s ease-out infinite}
+.ptok.sel::after{border-color:var(--accent)}
+@keyframes ring2{from{transform:scale(.85);opacity:1}to{transform:scale(1.5);opacity:0}}
+.ptok.audio .rot::after{content:"";position:absolute;inset:6px;border-radius:50%;border:2px solid #222;border-bottom-color:transparent;border-left-color:transparent;transform:rotate(-45deg)}
+.ptok .anon{display:none}
+.ptok.hidden{display:none}
+.ptok.anon .pl{display:none}
+.ptok.anon .rot{filter:grayscale(1) blur(1px);opacity:.6}
+.planbar{position:absolute;left:16px;top:14px;z-index:15;display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px 6px 6px 12px}
+.planbar b{font-family:var(--font-display);font-size:16px}
+.planbar span{font-size:12px;color:var(--muted)}
+.iconbtn{border:0;background:var(--chip);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;flex:none}
+.iconbtn svg{width:15px;height:15px}
+.iconbtn:disabled{opacity:.35;cursor:not-allowed}
+
+/* inspector */
+.insp{background:var(--card);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0;position:relative;z-index:5}
+.tabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:transparent;padding:8px 10px 10px;font-size:13px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;display:flex;gap:6px;align-items:center}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs button:disabled{opacity:.4;cursor:default}
+.count{background:var(--focus);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 5px}
+.pb{overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;min-height:0;flex:1}
+.lede{font-size:12.5px;color:var(--muted);line-height:1.45;margin:0}
+.eyebrow{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0;display:flex;justify-content:space-between;align-items:center}
+.eyebrow button{border:0;background:none;color:var(--accent);font-size:11px;font-weight:700;letter-spacing:0;text-transform:none;padding:0}
+.flgroup{display:flex;flex-direction:column;gap:2px}
+.prow{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px;border:0;background:transparent;text-align:left;width:100%}
+.prow:hover{background:var(--hover)}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:11.5px;flex:none;position:relative}
+.av .dot{position:absolute;right:-2px;bottom:-2px;border:2px solid var(--card);width:11px;height:11px}
+.prow .meta{flex:1;min-width:0;display:flex;flex-direction:column}
+.prow .meta b{font-size:13px;font-weight:600}
+.prow .meta span{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.unread{background:var(--focus);color:#fff;font-size:10.5px;font-weight:700;border-radius:999px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 5px}
+.ib{display:grid;grid-template-columns:30px 1fr auto;gap:2px 10px;padding:8px;border-radius:9px;border:0;background:transparent;text-align:left;width:100%;align-items:start}
+.ib:hover{background:var(--hover)}
+.ib .av{grid-row:1/3}
+.ib b{font-size:13px;font-weight:600}
+.ib time{font-family:var(--font-mono);font-size:10.5px;color:var(--muted)}
+.ib p{grid-column:2/4;margin:0;font-size:12.5px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ib.new p{color:var(--ink)}
+.ib.new b::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--focus);margin-left:6px;vertical-align:middle}
+.ib .kind{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-left:6px}
+.act-log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.act-log li{font-size:12px;color:var(--muted);display:flex;gap:8px;line-height:1.35}
+.act-log time{font-family:var(--font-mono);font-size:10.5px;flex:none;padding-top:1px}
+.who{display:flex;gap:12px;align-items:center}
+.who .av{width:46px;height:46px;font-size:16px}
+.who b{font-size:15px;display:block}
+.who span{font-size:12.5px;color:var(--muted)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12.5px;margin:0}
+.facts dt{color:var(--muted)}.facts dd{margin:0;font-weight:500;min-width:0}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--chip)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.act{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 9px;font-size:12.5px;font-weight:600;text-align:left}
+.act:hover{border-color:var(--accent)}
+.act svg{width:15px;height:15px;color:var(--accent);flex:none}
+.act.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.act.primary svg{color:var(--accent-ink)}
+.act[disabled]{opacity:.45;cursor:not-allowed}
+.act small{display:block;font-weight:500;font-size:10.5px;opacity:.75}
+.thread{display:flex;flex-direction:column;gap:6px;background:var(--paper);border-radius:10px;padding:10px;min-height:60px}
+.msg{max-width:85%;font-size:12.5px;line-height:1.4;padding:6px 9px;border-radius:10px;background:var(--card);align-self:flex-start;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.msg.me{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
+.msg small{display:block;font-size:10px;opacity:.75;margin-top:2px;font-family:var(--font-mono)}
+.empty{font-size:12px;color:var(--muted);text-align:center;padding:8px;margin:0}
+.compose{display:flex;gap:6px}
+.compose input{flex:1;min-width:0;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:9px;padding:8px 10px;font:inherit;font-size:13px}
+.compose button{border:0;background:var(--accent);color:var(--accent-ink);border-radius:9px;width:38px;display:grid;place-items:center}
+.compose button svg{width:15px;height:15px}
+.hint{font-size:11.5px;color:var(--muted);line-height:1.4;margin:0;border-left:3px solid var(--line);padding-left:8px}
+
+/* stage overlays */
+.dock{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:5px;z-index:25}
+.dbtn{border:0;background:transparent;border-radius:8px;padding:7px 9px;font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.dbtn:hover{background:var(--hover)}
+.dbtn svg{width:15px;height:15px}
+.dbtn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.dsep{width:1px;height:22px;background:var(--line);margin:0 3px}
+#live{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:22;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+#stage.planmode #live{top:74px}
+.livechip{pointer-events:auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--paper);border-radius:999px;padding:5px 6px 5px 12px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);white-space:nowrap}
+.livechip .t{font-family:var(--font-mono);font-weight:500;opacity:.8}
+.livechip button{border:0;background:var(--focus);color:#fff;border-radius:999px;padding:4px 11px;font-size:12px;font-weight:700}
+.pulse{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.35}}
+#toasts{position:absolute;right:14px;top:14px;z-index:30;display:flex;flex-direction:column;gap:8px;width:320px;pointer-events:none}
+.nc{pointer-events:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;gap:8px;animation:slide .25s ease}
+@keyframes slide{from{opacity:0;transform:translateX(16px)}}
+.nc.k-call{border-color:var(--signal);box-shadow:var(--shadow),0 0 0 3px color-mix(in srgb,var(--signal) 25%,transparent)}
+.nch{display:flex;gap:9px;align-items:center}
+.nch .av{width:28px;height:28px;font-size:11px}
+.nch div{flex:1;min-width:0;display:flex;flex-direction:column}
+.nch b{font-size:13px}
+.nch span{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nch .x{border:0;background:none;color:var(--muted);padding:2px;width:22px;height:22px;display:grid;place-items:center}
+.nch .x svg{width:13px;height:13px}
+.nc p{margin:0;font-size:13px;line-height:1.4}
+.nca{display:flex;gap:6px;flex-wrap:wrap}
+.nca button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:600}
+.nca button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.nca button.danger{color:var(--focus)}
+.nc form{display:flex;gap:6px}
+.nc form input{flex:1;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:8px;padding:6px 9px;font:inherit;font-size:12.5px}
+.nc form button{border:0;background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:0 10px;font-weight:700;font-size:12px}
+.pin{position:absolute;z-index:20;display:flex;align-items:center;gap:5px;transform:translate(-50%,-50%);background:var(--card);border:2px solid var(--focus);border-radius:999px;padding:2px 8px 2px 2px;font-size:11.5px;font-weight:700;box-shadow:var(--shadow);cursor:pointer}
+.pin.call{border-color:var(--accent)}
+.pin .av{width:22px;height:22px;font-size:9px}
+.pin .av .dot{display:none}
+.pin i.arr{width:0;height:0;border:5px solid transparent;border-left-color:var(--muted);margin-left:2px}
+#scen{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);width:min(620px,calc(100% - 32px));max-height:calc(100% - 100px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);z-index:35;display:flex;flex-direction:column;overflow:hidden}
+.ph{display:flex;align-items:center;gap:8px;padding:12px 14px 10px;border-bottom:1px solid var(--line)}
+.ph h2{font-family:var(--font-display);font-size:17px;margin:0;flex:1;min-width:0}
+.scenlist{overflow-y:auto;padding:6px 10px 12px;display:flex;flex-direction:column}
+.srow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 6px;border-bottom:1px solid var(--line);align-items:center}
+.srow:last-child{border-bottom:0}
+.srow b{font-size:13.5px;font-weight:600}
+.srow p{grid-column:1;margin:0;font-size:12px;color:var(--muted);line-height:1.4}
+.srow .run{grid-row:1/3;grid-column:2;display:flex;align-items:center;gap:8px}
+.srow .run button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 12px;font-size:12.5px;font-weight:600}
+.srow .run button:disabled{opacity:.4;cursor:not-allowed}
+.state{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.state.running{background:color-mix(in srgb,var(--signal) 22%,transparent);color:var(--signal)}
+.state.pass{background:color-mix(in srgb,var(--ok) 20%,transparent);color:var(--ok)}
+.state.fail{background:color-mix(in srgb,var(--focus) 20%,transparent);color:var(--focus)}
+.checks{grid-column:1/-1;list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:3px}
+.checks li{font-size:12px;display:flex;gap:7px;align-items:baseline}
+.checks li::before{content:"✓";color:var(--ok);font-weight:700}
+.checks li.bad::before{content:"✕";color:var(--focus)}
+.summary{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* small screens: this mode is for tablets and computers */
+.gate{display:none}
+@media (max-width:1180px){:root{--rail:64px;--insp:300px}.fl{grid-template-columns:1fr;justify-items:center;padding:6px 4px}.fl .nm,.rail h3,.railfoot,.brand span,.clock{display:none}.fl .ur{position:absolute;margin:-18px 0 0 22px}.fl{position:relative}.search kbd{display:none}.dbtn .lbl{display:none}}
+@media (max-width:860px){.search{display:none}}
+@media (max-width:759px){
+  .app{display:none}
+  .gate{display:flex;height:100%;flex-direction:column;justify-content:center;gap:12px;padding-block:24px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+  .gate b{font-family:var(--font-display);font-size:24px;text-wrap:balance}
+  .gate p{margin:0;color:var(--muted);line-height:1.5;max-width:40ch}
+  .gate .mark{width:44px;height:44px;border-radius:10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:0s!important;transition-duration:0s!important}}
+</style>
+
+<div class="gate" role="note">
+  <div class="mark"><svg width="24" height="24" viewBox="0 0 24 24"><path d="M5 21V7l7-4 7 4v14M9 21v-4h6v4M9 9h2M13 9h2M9 13h2M13 13h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+  <b>Office view needs a bigger screen</b>
+  <p>Zedu Tower is built for tablets and computers. Open it on one, or turn your tablet sideways. Your chats stay in the regular Zedu app on your phone.</p>
+</div>
+
+<div class="app">
+<header class="top">
+  <div class="brand">
+    <div class="mark"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 21V7l7-4 7 4v14M9 21v-4h6v4M9 9h2M13 9h2M9 13h2M13 13h2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div>
+    <div><b>Zedu Tower</b><span>Nexprove · Avi's view</span></div>
+  </div>
+  <div class="seg" id="viewseg" aria-label="View">
+    <button type="button" data-v="tower" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M6 21V4h12v17M6 9h12M6 14h12" fill="none" stroke="currentColor" stroke-width="2"/></svg>Tower</button>
+    <button type="button" data-v="plan" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 12h7V4M14 4v8h7M10 20v-4" fill="none" stroke="currentColor" stroke-width="2"/></svg>Floor plan</button>
+  </div>
+  <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><input id="q" placeholder="Find a person or room" autocomplete="off" aria-label="Find a person or room"><kbd>/</kbd><div class="qres" id="qres" hidden></div></div>
+  <div class="spacer"></div>
+  <button type="button" class="held" id="held" hidden></button>
+  <div class="seg" id="mystatus" aria-label="Your status">
+    <button type="button" data-s="active" aria-pressed="true">Active</button><button type="button" data-s="focus" aria-pressed="false">Focus</button><button type="button" data-s="away" aria-pressed="false">Away</button>
+  </div>
+  <span class="clock" id="time">09:38</span>
+  <div class="seg" id="speed" aria-label="Simulation speed"><button type="button" data-s="1" aria-pressed="true">1×</button><button type="button" data-s="2" aria-pressed="false">2×</button><button type="button" data-s="4" aria-pressed="false">4×</button></div>
+  <a class="testbtn guide" href="docs.html" title="How the prototype works">Guide</a>
+  <button type="button" class="testbtn" id="b-tests"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 18l-5-9V3" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Tests</button>
+</header>
+
+<div class="main">
+  <nav class="rail" aria-label="Floors">
+    <h3>Floors</h3>
+    <div class="floors" id="floors"></div>
+    <div class="railfoot">Click a floor to go there. Click it again for its floor plan. <kbd>P</kbd> plan · <kbd>T</kbd> tower · <kbd>↑</kbd><kbd>↓</kbd> floors</div>
+  </nav>
+
+  <main id="stage" aria-label="Office view">
+    <div id="world">
+      <div class="layer" id="L-scene"></div>
+      <div class="layer" id="L-rooms"></div>
+      <div class="layer" id="L-cars"></div>
+      <div class="layer" id="L-actors"></div>
+      <div class="layer" id="L-front"></div>
+      <div class="layer" id="L-over"></div>
+      <svg class="layer" id="links"></svg>
+    </div>
+    <div id="plan" hidden></div>
+    <div class="planbar" id="planbar" hidden></div>
+    <div id="pins"></div>
+    <div id="live"></div>
+    <div id="toasts" aria-live="polite"></div>
+    <div id="scen" hidden></div>
+    <div class="dock" aria-label="Camera">
+      <button type="button" class="dbtn" id="b-over" title="Whole tower"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Overview</span></button>
+      <button type="button" class="dbtn" id="b-me" title="Fly to your office (F)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="2.5" fill="currentColor"/></svg><span class="lbl">Find me</span></button>
+      <span class="dsep"></span>
+      <button type="button" class="dbtn" id="b-follow" aria-pressed="true" title="Camera follows walks and couriers"><svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg><span class="lbl">Follow action</span></button>
+      <button type="button" class="dbtn" id="b-couriers" aria-pressed="true" title="Show courier bots"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v4" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="13" r="1.5" fill="currentColor"/><circle cx="14.5" cy="13" r="1.5" fill="currentColor"/></svg><span class="lbl">Couriers</span></button>
+    </div>
+  </main>
+
+  <aside class="insp" id="insp">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" data-tab="inbox" aria-selected="true">Inbox <span class="count" id="inboxCount" hidden>0</span></button>
+      <button type="button" role="tab" data-tab="people" aria-selected="false">People</button>
+      <button type="button" role="tab" data-tab="detail" aria-selected="false" disabled>Details</button>
+    </div>
+    <div class="pb" id="pb"></div>
+  </aside>
+</div>
+</div>
+
+<script>
+(() => {
+'use strict';
+// ---------- geometry ----------
+const H = 150, SLAB = 14, RH = H - SLAB, TOP0 = 240, TX0 = 260, SHAFT = 72, RW = 1140;
+const TX1 = TX0 + SHAFT * 2 + RW, WORLD_W = 1800;
+const floorTop = f => TOP0 + (7 - f) * H;
+const GROUND = floorTop(0);
+const WORLD_H = GROUND + H + 160;
+const feetY = f => floorTop(f) + RH - 7;
+const clampX = x => Math.max(TX0 + 20, Math.min(TX1 - 20, x));
+const FNAME = {7:'Leadership',6:'Product & Design',5:'Engineering',4:'Data & Platform',3:'Sales & Growth',2:'Support & Ops',1:'Lobby',0:'Basement'};
+const fshort = f => f === 0 ? 'B1' : f === 1 ? 'L' : 'F' + (f - 1);
+const fname = f => f === 1 ? 'Lobby' : f === 0 ? 'B1 · Basement' : fshort(f) + ' · ' + FNAME[f];
+// plan geometry (top-down): rooms band, corridor, service strip
+const PW = TX1 - TX0, PD = 560, PR_Y = 24, PR_H = 340, CORR_Y = 364, CORR_H = 84;
+
+const IC = {
+  phone:'<svg viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>',
+  headset:'<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a8 8 0 0 0-8 8v6a3 3 0 0 0 3 3h1v-7H6v-2a6 6 0 0 1 12 0v2h-2v7h1a3 3 0 0 0 3-3v-6a8 8 0 0 0-8-8z"/></svg>',
+  mail:'<svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z" fill="currentColor" opacity=".25"/><path d="M3 6h18v12H3z" fill="none" stroke="currentColor" stroke-width="2"/><path d="m3 7 9 6 9-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  lock:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  walk:'<svg viewBox="0 0 24 24"><circle cx="13" cy="4" r="2" fill="currentColor"/><path d="M10 22l2-7 3 3v6M8 12l2-4 4 1 2 4 3 1M12 15l-1-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  users:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  send:'<svg viewBox="0 0 24 24"><path fill="currentColor" d="M3 11.5 21 3l-7.5 18-2.5-7.5z"/></svg>',
+  close:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  up:'<svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  down:'<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  tower:'<svg viewBox="0 0 24 24"><path d="M6 21V4h12v17M6 9h12M6 14h12" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  plan:'<svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 12h7V4M14 4v8h7M10 20v-4" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+  bot:'<svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3v4" stroke="currentColor" stroke-width="2"/><circle cx="9.5" cy="13" r="1.5" fill="currentColor"/><circle cx="14.5" cy="13" r="1.5" fill="currentColor"/></svg>',
+  talk:'<svg viewBox="0 0 12 12"><path d="M3 3a4 4 0 0 1 0 6M6.5 1a7 7 0 0 1 0 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+};
+
+// ---------- data (mock workspace) ----------
+const FLOORS = [
+  {f:7, rooms:[['office',220,{owner:'bisi'}],['office',220,{owner:'ngozi'}],['meeting',400,{name:'Boardroom',ch:'leadership',priv:'locked'}],['lounge',300,{name:'Town hall',ch:'announcements'}]]},
+  {f:6, rooms:[['office',210,{owner:'tolu'}],['office',210,{owner:'ife'}],['studio',380,{name:'Design studio',ch:'design'}],['meeting',340,{name:'Sprint room',ch:'product-sync'}]]},
+  {f:5, rooms:[['office',240,{owner:'avi'}],['office',210,{owner:'kemi'}],['office',210,{owner:'dayo'}],['team',480,{name:'Eng bay',ch:'eng-core'}]]},
+  {f:4, rooms:[['office',210,{owner:'femi'}],['office',210,{owner:'uche'}],['team',400,{name:'Platform bay',ch:'platform'}],['meeting',320,{name:'War room',ch:'incidents',priv:'member'}]]},
+  {f:3, rooms:[['office',210,{owner:'chidi'}],['office',210,{owner:'zainab'}],['team',460,{name:'Sales floor',ch:'sales'}],['booth',260,{name:'Call booths',ch:'sales-calls'}]]},
+  {f:2, rooms:[['office',210,{owner:'amaka'}],['office',210,{owner:'seun'}],['team',480,{name:'Support desk',ch:'support'}],['meeting',240,{name:'Huddle room',ch:'ops'}]]},
+  {f:1, rooms:[['reception',360,{name:'Reception',ch:'general'}],['cafe',520,{name:'Café',ch:'random'}],['lounge',260,{name:'Lobby lounge',ch:'watercooler'}]]},
+  {f:0, rooms:[['server',420,{name:'Server room',ch:'infra-alerts'}],['archive',380,{name:'Archive',ch:'files'}],['storage',340,{name:'Bike store',ch:'bikes'}]]},
+];
+const PEOPLE = {
+  avi:   {name:'Avi',          role:'Founder',           shirt:'#1F7A66', skin:'#8A5A3C', hair:'#17110D', pants:'#2B323C'},
+  kemi:  {name:'Kemi Adeyemi', role:'Backend engineer',  shirt:'#C2553F', skin:'#6E4630', hair:'#120D0A', pants:'#33393F'},
+  dayo:  {name:'Dayo Bello',   role:'Mobile engineer',   shirt:'#3E5C8A', skin:'#5C3A26', hair:'#0F0B08', pants:'#3B3530'},
+  tolu:  {name:'Tolu Okafor',  role:'Product manager',   shirt:'#8A5BA8', skin:'#7A4E33', hair:'#1C130E', pants:'#2E3440'},
+  ife:   {name:'Ife Martins',  role:'Product designer',  shirt:'#D58B3A', skin:'#9A6644', hair:'#2A1B12', pants:'#38404A'},
+  bisi:  {name:'Bisi Lawal',   role:'COO',               shirt:'#2F4858', skin:'#6A4330', hair:'#8E8E8E', pants:'#262B30'},
+  ngozi: {name:'Ngozi Eze',    role:'People & HR',       shirt:'#A3485A', skin:'#764A31', hair:'#140E0B', pants:'#30343A'},
+  femi:  {name:'Femi Ade',     role:'Platform lead',     shirt:'#4F7D3C', skin:'#5F3C28', hair:'#110C09', pants:'#2F3236'},
+  uche:  {name:'Uche Nwosu',   role:'Data analyst',      shirt:'#7A6A3A', skin:'#83553A', hair:'#1A120D', pants:'#353A40'},
+  chidi: {name:'Chidi Obi',    role:'Sales lead',        shirt:'#3B6EA5', skin:'#6B442E', hair:'#130E0A', pants:'#2A2E33'},
+  zainab:{name:'Zainab Musa',  role:'Growth marketer',   shirt:'#B24C7A', skin:'#8E5E40', hair:'#3A2416', pants:'#33373D'},
+  amaka: {name:'Amaka Uzo',    role:'Support lead',      shirt:'#C9802F', skin:'#704731', hair:'#150F0B', pants:'#2D3238'},
+  seun:  {name:'Seun Ajayi',   role:'Operations',        shirt:'#5A6E7A', skin:'#64402B', hair:'#100C09', pants:'#30353A'},
+};
+const START_STATUS = {dayo:'focus', ngozi:'offline', zainab:'away'};
+const REPLIES = {
+  tolu:'Yes, it fits. I\'ll add it to Thursday\'s sprint.',
+  kemi:'On it. PR should be up by 2pm.',
+  zainab:'Grabbing coffee downstairs. July signups were 1,240, I\'ll send the sheet in 10.',
+  chidi:'The Ikeja client signed this morning, so we\'re good.',
+  femi:'Deploy is green. Nothing blocking.',
+  ife:'Sending the new onboarding screens now.',
+  uche:'Dashboard is refreshed with yesterday\'s numbers.',
+  bisi:'Approved. Go ahead.',
+  amaka:'Thanks, I\'ll let the customer know.',
+  seun:'Noted, I\'ll book the van.',
+};
+const reply = id => REPLIES[id] || 'Got it, thanks.';
+
+// ---------- dom helpers ----------
+const $ = s => document.querySelector(s);
+const world = $('#world'), stage = $('#stage'), planEl = $('#plan');
+const LS = $('#L-scene'), LR = $('#L-rooms'), LC = $('#L-cars'), LA = $('#L-actors'), LF = $('#L-front'), LO = $('#L-over'), LINKS = $('#links');
+const el = (cls, parent, css = {}, html = '') => { const d = document.createElement('div'); d.className = cls; Object.assign(d.style, css); if (html) d.innerHTML = html; parent.appendChild(d); return d; };
+const px = n => n + 'px';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials = n => n.split(' ').map(w => w[0]).slice(0, 2).join('');
+const short = id => id === 'avi' ? 'You' : PEOPLE[id].name.split(' ')[0];
+[world, LS, LR, LC, LA, LF, LO].forEach(n => { n.style.width = px(WORLD_W); n.style.height = px(WORLD_H); });
+LINKS.setAttribute('width', WORLD_W); LINKS.setAttribute('height', WORLD_H); LINKS.setAttribute('viewBox', `0 0 ${WORLD_W} ${WORLD_H}`);
+planEl.style.width = px(PW); planEl.style.height = px(PD);
+
+// ---------- time engine ----------
+let SPEED = 1;
+let simClock = 9 * 3600 + 38 * 60;
+const tweens = new Set();
+const tween = (dur, fn) => new Promise(res => tweens.add({t: 0, dur: Math.max(dur, 0.001), fn, res}));
+const wait = ms => tween(ms / 1000, () => {});
+const ease = p => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+const fmtT = s => { s = Math.max(0, Math.round(s)); return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); };
+const fmtClock = s => { const h = Math.floor(s / 3600) % 24, m = Math.floor(s / 60) % 60; return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+
+// ---------- tower scene ----------
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+el('abs sky', LS, {left:0, top:0, width:px(WORLD_W), height:px(GROUND)});
+for (let x = -20; x < WORLD_W;) {
+  const w = 80 + rnd() * 120, h = 300 + rnd() * 520;
+  el('bldg', LS, {left:px(x), top:px(GROUND - 18 - h), width:px(w), height:px(h)});
+  x += w + 14 + rnd() * 40;
+}
+el('abs street', LS, {left:0, top:px(GROUND - 18), width:px(WORLD_W), height:px(18)});
+el('abs earth', LS, {left:0, top:px(GROUND), width:px(WORLD_W), height:px(WORLD_H - GROUND)});
+[120, 1640].forEach(x => el('tree', LS, {left:px(x), top:px(GROUND - 18 - 44)}));
+el('abs tower', LS, {left:px(TX0 - 10), top:px(TOP0 - 30), width:px(TX1 - TX0 + 20), height:px(GROUND + H - TOP0 + 30)});
+[TX0 + 160, TX0 + 700, TX0 + 1150].forEach(x => el('tree', LS, {left:px(x), top:px(TOP0 - 30 - 44)}));
+for (let f = 0; f <= 7; f++) {
+  el('abs slab', LS, {left:px(TX0), top:px(floorTop(f) + RH), width:px(TX1 - TX0), height:px(SLAB)});
+  el('ftag', LS, {left:px(TX0 + 8), top:px(floorTop(f) + 6)}, fshort(f));
+}
+const shaftTop = floorTop(7), shaftBot = floorTop(0) + RH;
+[TX0, TX1 - SHAFT].forEach(x => {
+  el('abs shaft', LS, {left:px(x), top:px(shaftTop), width:px(SHAFT), height:px(shaftBot - shaftTop)});
+  for (let f = 0; f <= 7; f++) el('sdoor', LS, {left:px(x + 14), top:px(floorTop(f) + 22), height:px(RH - 22)});
+});
+
+// rooms
+const rooms = [], roomById = {};
+FLOORS.forEach(fl => {
+  let x = TX0 + SHAFT;
+  fl.rooms.forEach(([type, w, o]) => {
+    const id = o.owner ? 'office-' + o.owner : o.ch;
+    const r = {id, f: fl.f, x, w, type, ...o, taken: new Map()};
+    if (o.owner) { r.name = o.owner === 'avi' ? 'Your office' : short(o.owner) + '\'s office'; r.ch = null; }
+    const at = a => a.map(k => x + w * k);
+    r.sp = type === 'office' ? {desk: x + w * 0.58, seats: at([0.3, 0.2, 0.86, 0.42])}
+      : type === 'meeting' ? {seats: at([0.3, 0.42, 0.54, 0.36, 0.48, 0.66, 0.2, 0.8])}
+      : type === 'cafe' ? {seats: at([0.42, 0.55, 0.66, 0.78, 0.9, 0.1])}
+      : type === 'team' ? {seats: at([0.3, 0.5, 0.7, 0.16, 0.88])}
+      : {seats: at([0.2, 0.36, 0.52, 0.68, 0.84])};
+    rooms.push(r); roomById[id] = r; x += w;
+  });
+});
+const roomAt = (f, x) => rooms.find(r => r.f === f && x >= r.x && x < r.x + r.w);
+const SITS = new Set(['office', 'meeting', 'cafe', 'team', 'studio', 'lounge', 'booth']);
+
+function furnish(r) {
+  const back = (cls, left, css = {}) => el('fx ' + cls, r.el, {left: left + '%', ...css});
+  const front = (cls, left, css = {}) => el('fx ' + cls, r.fr, {left: left + '%', ...css});
+  switch (r.type) {
+    case 'office':
+      back('lamp', 58); back('shelf', 16); back('art', 84); back('plant', 6); back('chair', 52); back('mon', 64);
+      front('desk', 58);
+      if (r.owner === 'avi') back('pad', 12);
+      break;
+    case 'team':
+      back('wb', 13); [30, 50, 70].forEach(p => { back('lamp', p); back('chair', p - 5); back('mon', p + 6); front('desk', p + 2); }); back('plant', 94);
+      break;
+    case 'meeting':
+      back('tv', 50); back('lamp', 38); back('lamp', 62); [24, 36, 48, 60, 72].forEach(p => back('chair', p)); front('table', 50, {width: '62%'}); back('plant', 6); back('plant', 95);
+      break;
+    case 'studio':
+      back('wb', 72); back('art', 20, {top: '30px'}); [22, 46].forEach(p => { back('chair', p - 4); back('mon', p + 6); front('desk', p); }); back('plant', 92);
+      break;
+    case 'cafe':
+      back('lamp', 18); back('lamp', 60); back('lamp', 82); back('shelf', 18, {top: '20px'}); front('counter', 18); [48, 72, 86].forEach(p => front('ctable', p)); back('plant', 98);
+      break;
+    case 'reception':
+      back('logo', 50); front('counter', 50, {width: '150px', height: '36px'}); back('plant', 10); back('plant', 88); back('sofa', 24, {width: '60px'});
+      break;
+    case 'lounge':
+      back('art', 50, {width: '60px', height: '34px', top: '28px'}); back('sofa', 45); back('plant', 12); back('plant', 86); back('lamp', 50);
+      break;
+    case 'booth':
+      [22, 50, 78].forEach(p => back('booth', p));
+      break;
+    case 'server':
+      [14, 26, 38, 50, 62, 74, 86].forEach(p => back('rack', p));
+      break;
+    case 'archive':
+      [18, 40, 62, 84].forEach(p => { back('shelf', p, {top: '24px'}); back('shelf', p, {top: '68px'}); });
+      break;
+    case 'storage':
+      [20, 44, 68].forEach(p => back('bike', p)); back('boxes', 88);
+      break;
+  }
+}
+rooms.forEach(r => {
+  const box = {left:px(r.x), top:px(floorTop(r.f)), width:px(r.w), height:px(RH)};
+  r.el = el('room t-' + r.type, LR, box);
+  r.el.dataset.room = r.id;
+  r.fr = el('front', LF, box);
+  furnish(r);
+  const sub = r.owner ? (r.owner === 'avi' ? 'you' : 'DM') : '#' + r.ch;
+  r.label = el('rlabel', r.el, {}, `<b>${r.priv ? IC.lock : ''}${esc(r.name)}</b><span>${esc(sub)}</span>`);
+  if (r.priv === 'locked') el('frost', LO, box, `<div>${IC.lock}#${r.ch} · private</div>`);
+  if (r.owner) { r.blinds = el('blinds', LO, {...box, left:px(r.x + 3), width:px(r.w - 3), height:px(RH - 10)}, '<span>Focus mode</span>'); r.blinds.hidden = true; }
+});
+const officeOf = id => roomById['office-' + id];
+
+// elevators
+const carY = f => floorTop(f) + 12;
+const elevs = [TX0 + SHAFT / 2, TX1 - SHAFT / 2].map((x, i) => {
+  const e = {i, x, f: 1, y: carY(1), q: Promise.resolve(), pending: 0, el: el('car', LC, {height: px(RH - 14)})};
+  e.place = () => { e.el.style.transform = `translate(${e.x - 26}px,${e.y}px)`; };
+  e.place(); return e;
+});
+
+// ---------- actors ----------
+const A = {}, bots = new Set();
+function figure(p) {
+  const dark = `color-mix(in srgb,${p.shirt} 78%,#000)`;
+  return `<svg viewBox="0 0 24 56" width="24" height="56">
+    <ellipse cx="12" cy="54.5" rx="9" ry="1.6" fill="#000" opacity=".18"/>
+    <g class="legs"><g class="leg l1"><rect x="7.4" y="33" width="4.2" height="18" rx="1.8" fill="${p.pants}"/><rect x="6.6" y="50" width="5.6" height="3" rx="1.3" fill="#1A1A1A"/></g>
+    <g class="leg l2"><rect x="12.4" y="33" width="4.2" height="18" rx="1.8" fill="${p.pants}"/><rect x="12" y="50" width="5.6" height="3" rx="1.3" fill="#1A1A1A"/></g></g>
+    <rect class="arm a1" x="4" y="18.5" width="3.4" height="14" rx="1.7" fill="${dark}"/>
+    <path d="M6.4 21c0-3 2.4-4.2 5.6-4.2s5.6 1.2 5.6 4.2v12.2c-3.7 1.2-7.5 1.2-11.2 0z" fill="${p.shirt}"/>
+    <rect x="10.4" y="14.5" width="3.2" height="3.2" fill="${p.skin}"/>
+    <rect class="arm a2" x="16.6" y="18.5" width="3.4" height="14" rx="1.7" fill="${p.shirt}"/>
+    <ellipse cx="12" cy="10" rx="5.6" ry="6.1" fill="${p.skin}"/>
+    <path d="M6.3 10.2C5.9 3.4 18.1 3.4 17.7 10.2C16.1 7.4 8 7.1 6.3 10.2Z" fill="${p.hair}"/>
+    <g class="headset"><path d="M6.4 9.5a5.6 5.6 0 0 1 11.2 0" fill="none" stroke="#222" stroke-width="1.4"/><rect x="16.3" y="8.4" width="2.6" height="4.4" rx="1" fill="#222"/><path d="M17.6 12.6q-.4 3-3.6 3.4" fill="none" stroke="#222" stroke-width="1"/></g>
+    <g class="phone"><rect x="17.2" y="5.6" width="3.2" height="6.4" rx=".8" fill="#1E2528"/><rect x="17.7" y="6.4" width="2.2" height="4.6" fill="#5C7E8C"/></g></svg>`;
+}
+function botSVG(color) {
+  return `<svg viewBox="0 0 24 28" width="24" height="28">
+    <line x1="12" y1="2" x2="12" y2="7" stroke="${color}" stroke-width="1.6"/><circle cx="12" cy="2.4" r="1.8" fill="${color}"/>
+    <rect x="3" y="7" width="18" height="14" rx="6" fill="${color}"/><rect x="6.5" y="10.5" width="11" height="6.5" rx="3.2" fill="#0E1A17"/>
+    <circle cx="9.7" cy="13.7" r="1.3" fill="#7FF0C8"/><circle cx="14.3" cy="13.7" r="1.3" fill="#7FF0C8"/>
+    <ellipse cx="12" cy="26.5" rx="6" ry="1.2" fill="#000" opacity=".16"/>
+    <g class="env" style="display:none"><rect x="13" y="16.5" width="10" height="7" rx="1" fill="#FFF" stroke="${color}"/><path d="M13 17l5 3.6 5-3.6" fill="none" stroke="${color}"/></g></svg>`;
+}
+function place(a) {
+  const h = a.kind === 'bot' ? 40 : 56;
+  a.el.style.transform = `translate3d(${a.x - 12}px,${a.y - h + 2}px,0)`;
+  a.body.style.transform = a.facing < 0 ? 'scaleX(-1)' : '';
+}
+function mkActor(id) {
+  const p = PEOPLE[id];
+  const a = {id, kind: 'person', p, status: 'active', facing: 1, q: Promise.resolve(), busy: false, seat: null};
+  a.el = el('actor' + (id === 'avi' ? ' me' : ''), LA, {}, `<div class="body">${figure(p)}</div><span class="talk">${IC.talk}</span><div class="tag"><i class="dot"></i>${esc(short(id))}</div>`);
+  a.el.dataset.actor = id;
+  a.body = a.el.querySelector('.body');
+  const off = officeOf(id);
+  a.home = {f: off.f, x: off.sp.desk - 14};
+  a.f = a.home.f; a.x = a.home.x; a.y = feetY(a.f);
+  A[id] = a; place(a); setSit(a); return a;
+}
+function mkBot(ownerId, color) {
+  const o = A[ownerId];
+  const b = {id: 'bot-' + ownerId + '-' + Math.random().toString(36).slice(2, 6), kind: 'bot', owner: ownerId, color, facing: 1, q: Promise.resolve(), f: o.f, x: o.x, y: feetY(o.f)};
+  b.el = el('actor bot', LA, {}, `<div class="body">${botSVG(color)}</div>`);
+  b.body = b.el.querySelector('.body'); b.env = b.el.querySelector('.env');
+  b.carry = on => { b.env.style.display = on ? '' : 'none'; };
+  b.el.style.visibility = showCouriers ? '' : 'hidden';
+  bots.add(b); place(b); return b;
+}
+function removeBot(b) { b.el.remove(); bots.delete(b); if (b.ptok) { b.ptok.remove(); b.ptok = null; } }
+const act = (a, fn) => { const p = a.q.then(fn); a.q = p.catch(e => console.error(e)); return p; };
+function setSit(a) {
+  if (a.kind !== 'person') return;
+  const r = roomAt(a.f, a.x);
+  const sit = !a.walkingNow && !a.inCar && r && SITS.has(r.type) && (a.seat || atHome(a));
+  a.el.classList.toggle('sit', !!sit);
+  if (atHome(a)) { a.facing = 1; place(a); }
+}
+async function walk(a, x) {
+  x = clampX(x);
+  const d = x - a.x; if (Math.abs(d) < 1.5) return;
+  a.facing = d > 0 ? 1 : -1; a.walkingNow = true; a.el.classList.add('walking'); a.el.classList.remove('sit');
+  const from = a.x, sp = a.kind === 'bot' ? 210 : 150;
+  await tween(Math.abs(d) / sp, p => { a.x = from + d * p; place(a); });
+  a.walkingNow = false; a.el.classList.remove('walking');
+}
+function lockElev(e, fn) { e.pending++; const p = e.q.then(fn).finally(() => e.pending--); e.q = p.catch(() => {}); return p; }
+async function moveCar(e, f, riders = []) {
+  const from = e.y, to = carY(f);
+  if (Math.abs(to - from) < 1) { e.f = f; return; }
+  const n = Math.abs(to - from) / H;
+  await tween(0.35 + 0.36 * n, p => {
+    e.y = from + (to - from) * ease(p); e.place();
+    riders.forEach(a => { a.y = e.y + RH - 14 - 5; place(a); });
+  });
+  e.f = f;
+}
+async function goTo(a, f, x) {
+  if (a.f !== f) {
+    const e = elevs.slice().sort((m, n) => (Math.abs(a.x - m.x) + Math.abs(x - m.x) + m.pending * 160) - (Math.abs(a.x - n.x) + Math.abs(x - n.x) + n.pending * 160))[0];
+    await walk(a, e.x);
+    await lockElev(e, async () => {
+      await moveCar(e, a.f);
+      e.el.classList.add('open'); await wait(380);
+      a.inCar = e; await walk(a, e.x);
+      e.el.classList.remove('open'); await wait(220);
+      await moveCar(e, f, [a]);
+      a.f = f;
+      e.el.classList.add('open'); await wait(300);
+      a.inCar = null; a.y = feetY(f); place(a);
+      wait(500).then(() => e.el.classList.remove('open'));
+    });
+  }
+  await walk(a, x);
+  setSit(a);
+}
+function releaseSeat(a) { if (a.seat) { if (a.seat.r.taken.get(a.seat.i) === a.id) a.seat.r.taken.delete(a.seat.i); a.seat = null; } }
+function goSeat(a, r) {
+  releaseSeat(a);
+  const n = r.sp.seats.length; let i = 0;
+  while (i < n && r.taken.has(i)) i++;
+  if (i === n) i = Math.floor(Math.random() * n);
+  r.taken.set(i, a.id); a.seat = {r, i};
+  return goTo(a, r.f, r.sp.seats[i]);
+}
+function goHome(a) { releaseSeat(a); return goTo(a, a.home.f, a.home.x); }
+const atHome = a => a.f === a.home.f && Math.abs(a.x - a.home.x) < 4;
+async function chase(a, t, gap = 30) {
+  for (let i = 0; i < 6; i++) {
+    const side = a.x <= t.x ? -gap : gap;
+    await goTo(a, t.f, t.x + side);
+    if (a.f === t.f && Math.abs(a.x - t.x) < gap + 22) { a.facing = t.x > a.x ? 1 : -1; place(a); return true; }
+  }
+  return false;
+}
+function flash(a, cls, ms = 2000) { a.el.classList.add(cls); wait(ms).then(() => a.el.classList.remove(cls)); if (a.ptok) { a.ptok.classList.add(cls); wait(ms).then(() => a.ptok && a.ptok.classList.remove(cls)); } }
+function pingDesk(id) { const m = officeOf(id).el.querySelector('.mon'); if (m) { m.classList.remove('ping'); void m.offsetWidth; m.classList.add('ping'); } }
+
+// links (calls, audio)
+const links = new Map();
+const ptOf = o => o.el ? [o.x, o.y - (o.kind === 'bot' ? 26 : 40)] : [o.x, o.y];
+function drawLinks() {
+  const keep = new Set();
+  links.forEach((L, k) => {
+    keep.add(k);
+    let p = LINKS.querySelector(`[data-k="${k}"]`);
+    if (!p) { p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.dataset.k = k; LINKS.appendChild(p); }
+    p.setAttribute('class', L.kind);
+    const [x1, y1] = ptOf(L.a), [x2, y2] = ptOf(L.b);
+    const cy = Math.min(y1, y2) - 60 - Math.abs(x2 - x1) * 0.08;
+    p.setAttribute('d', `M${x1} ${y1} Q${(x1 + x2) / 2} ${cy} ${x2} ${y2}`);
+  });
+  LINKS.querySelectorAll('path').forEach(p => { if (!keep.has(p.dataset.k)) p.remove(); });
+}
+
+// ---------- people setup ----------
+Object.keys(PEOPLE).forEach(mkActor);
+const me = A.avi;
+let showCouriers = true;
+const myBot = mkBot('avi', '#1F7A66');
+const BOT_DOCK = () => ({f: officeOf('avi').f, x: officeOf('avi').x + officeOf('avi').w * 0.12});
+myBot.x = BOT_DOCK().x; place(myBot);
+
+function applyStatusVisual(a) {
+  a.el.querySelector('.tag .dot').className = 'dot ' + a.status;
+  const off = officeOf(a.id);
+  off.blinds.hidden = a.status !== 'focus';
+  a.el.hidden = a.status === 'offline';
+  if (off.plate) { off.plate.remove(); off.plate = null; }
+  if (a.status === 'offline') off.plate = el('plate', LO, {left:px(off.sp.desk), top:px(floorTop(off.f) + 48)}, 'Offline');
+}
+function setStatus(id, s) {
+  const a = A[id], prev = a.status;
+  if (prev === s) return Promise.resolve();
+  a.status = s; applyStatusVisual(a);
+  if (id === 'avi') onMyStatus(prev, s);
+  renderSoft();
+  if (s === 'offline') { releaseSeat(a); a.f = a.home.f; a.x = a.home.x; a.y = feetY(a.f); place(a); return Promise.resolve(); }
+  if (s === 'away') return act(a, () => goSeat(a, roomById.random));
+  if (!atHome(a)) return act(a, () => goHome(a));
+  return Promise.resolve();
+}
+Object.entries(START_STATUS).forEach(([id, s]) => {
+  const a = A[id]; a.status = s;
+  if (s === 'away') { const r = roomById.random; const i = r.sp.seats.findIndex((_, k) => !r.taken.has(k)); r.taken.set(i, id); a.seat = {r, i}; a.f = r.f; a.x = r.sp.seats[i]; a.y = feetY(a.f); place(a); setSit(a); }
+});
+Object.values(A).forEach(applyStatusVisual);
+
+// ---------- floor plan ----------
+let view = 'tower', planFloor = 5;
+function planRect(r) { return {x: r.x - TX0, y: PR_Y, w: r.w, h: PR_H}; }
+function planSeats(r) {
+  const w = r.w, X = r.x - TX0, Y = PR_Y;
+  const P = (x, y, face) => ({x: X + x, y: Y + y, face});
+  switch (r.type) {
+    case 'office': return {owner: P(w * .5, 120, 0), seats: [P(w * .3, 205, -15), P(w * .7, 205, 15), P(w * .3, 275, 0), P(w * .7, 275, 0)]};
+    case 'meeting': {
+      const cx = w / 2, cy = 175, tw = w * .56, th = 84, dx = tw / 3.3;
+      return {seats: [P(cx - dx, cy - th / 2 - 15, 180), P(cx, cy - th / 2 - 15, 180), P(cx + dx, cy - th / 2 - 15, 180), P(cx - dx, cy + th / 2 + 15, 0), P(cx, cy + th / 2 + 15, 0), P(cx + dx, cy + th / 2 + 15, 0), P(cx - tw / 2 - 16, cy, 90), P(cx + tw / 2 + 16, cy, -90)], table: {x: X + cx - tw / 2, y: Y + cy - th / 2, w: tw, h: th}};
+    }
+    case 'cafe': return {seats: [P(w * .42, 190, 90), P(w * .55, 190, -90), P(w * .66, 270, 90), P(w * .78, 270, -90), P(w * .9, 190, -90), P(w * .1, 270, 0)]};
+    case 'team': return {seats: [P(w * .3, 150, 0), P(w * .5, 150, 0), P(w * .7, 150, 0), P(w * .3, 260, 0), P(w * .7, 260, 0)]};
+    default: return {seats: [.2, .36, .52, .68, .84].map((k, i) => P(w * k, i % 2 ? 250 : 190, 0))};
+  }
+}
+rooms.forEach(r => { r.ps = planSeats(r); });
+function buildPlan(f) {
+  planFloor = f;
+  planEl.innerHTML = '';
+  const add = (cls, parent, x, y, w, h, html = '') => el(cls, parent, {left:px(x), top:px(y), width: w == null ? '' : px(w), height: h == null ? '' : px(h)}, html);
+  add('pfloor', planEl, -8, -8, PW + 16, PD + 16);
+  add('pglass', planEl, SHAFT, 0, PW - SHAFT * 2, null).style.top = '-6px';
+  add('pcorr', planEl, SHAFT, CORR_Y, PW - SHAFT * 2, CORR_H);
+  [0, PW - SHAFT].forEach((x, i) => {
+    const c = add('pcore', planEl, x, 0, SHAFT, PD);
+    add('plift', c, 8, 30, SHAFT - 22, 64, 'LIFT');
+    add('pstairs', c, 8, 250, SHAFT - 22, 120);
+    elevs[i].pl = {x: x + SHAFT / 2, y: 62};
+  });
+  // service strip
+  const svc = [['WC', 120], ['Print', 110], ['Pantry', 180], ['Store', 120], ['WC', 120]];
+  let sx = SHAFT + 40;
+  svc.forEach(([n, w]) => { add('pf wc', planEl, sx, CORR_Y + CORR_H + 10, w, PD - CORR_Y - CORR_H - 22, n); sx += w + (PW - SHAFT * 2 - 80 - 650) / 4; });
+  rooms.filter(r => r.f === f).forEach(r => {
+    const R = planRect(r);
+    const mat = r.type === 'office' || r.type === 'studio' || r.type === 'lounge' || r.type === 'reception' ? 'm-wood' : r.type === 'meeting' || r.type === 'booth' ? 'm-carpet' : r.type === 'cafe' ? 'm-tile' : '';
+    const box = add('proom ' + mat, planEl, R.x, R.y, R.w, R.h);
+    box.dataset.room = r.id; r.pel = box;
+    const X = R.x, Y = R.y, w = R.w;
+    const P = (cls, x, y, ww, hh, html) => add('pf ' + cls, planEl, X + x, Y + y, ww, hh, html);
+    const seat = s => add('pf chair', planEl, s.x, s.y);
+    switch (r.type) {
+      case 'office': P('desk', w * .5 - 42, 70, 84, 34); seat(r.ps.owner); P('shelf', 10, 30, 16, 120); P('plant', w - 26, 30); P('rug', w * .18, 180, w * .64, 120); r.ps.seats.slice(0, 2).forEach(seat); P('sofa', w * .2, 290, w * .6, 22); break;
+      case 'meeting': { const t = r.ps.table; add('pf table', planEl, t.x, t.y, t.w, t.h); r.ps.seats.forEach(seat); r.screen = P('screen', w / 2 - 55, 12, 110, 14); P('plant', 22, 30); P('plant', w - 22, 30); break; }
+      case 'team': r.ps.seats.forEach(s => { add('pf desk', planEl, s.x - 32, s.y - 52, 64, 30); seat(s); }); P('shelf', 12, 22, 90, 12); P('plant', w - 22, 300); break;
+      case 'studio': P('table', w * .12, 110, w * .34, 70); P('table', w * .54, 110, w * .34, 70); r.ps.seats.forEach(seat); P('shelf', 12, 22, 120, 12); break;
+      case 'cafe': P('counter', 20, 26, 240, 40); [[.485, 190], [.72, 270], [.86, 190], [.16, 270]].forEach(([k, y]) => P('round', w * k - 20, y - 20, 40, 40)); r.ps.seats.forEach(seat); P('plant', w - 22, 30); break;
+      case 'reception': P('counter', w * .3, 40, w * .4, 34); P('sofa', w * .15, 270, w * .7, 24); P('plant', 22, 30); P('plant', w - 22, 30); break;
+      case 'lounge': P('rug', w * .12, 140, w * .76, 150); P('sofa', w * .15, 150, w * .7, 24); P('sofa', w * .15, 262, w * .7, 24); P('plant', 22, 30); break;
+      case 'booth': [.12, .42, .72].forEach(k => P('booth', w * k, 30, w * .2, 110)); break;
+      case 'server': for (let i = 0; i < 3; i++) P('rack', 30, 50 + i * 90, w - 60, 26); break;
+      case 'archive': for (let i = 0; i < 4; i++) P('shelf', 24, 40 + i * 70, w - 48, 16); break;
+      case 'storage': for (let i = 0; i < 4; i++) P('rack', 30, 50 + i * 70, w - 60, 6); break;
+    }
+    add('pdoor', box, Math.min(w - 50, 22), null).style.bottom = '-4px';
+    const sub = r.owner ? (r.owner === 'avi' ? 'your office' : 'DM') : '#' + r.ch;
+    add('pname', box, 0, 0, null, null, `${r.priv ? '' : ''}${esc(r.name)}<span>${esc(sub)}</span>`).style.cssText += 'left:10px;top:8px';
+    if (r.priv === 'locked') add('pfrost', planEl, R.x, R.y, R.w, R.h, `<div>${IC.lock}#${r.ch} · private</div>`);
+  });
+  // tokens rebuilt lazily
+  Object.values(A).forEach(a => { a.ptok = null; });
+  bots.forEach(b => { b.ptok = null; });
+  syncPlanRoomStates();
+  renderPlanBar();
+}
+function topSVG(a) {
+  if (a.kind === 'bot') return `<svg viewBox="-11 -11 22 22" width="22" height="22"><rect x="-8" y="-8" width="16" height="16" rx="5" fill="${a.color}"/><circle cx="-3" cy="-2" r="1.6" fill="#7FF0C8"/><circle cx="3" cy="-2" r="1.6" fill="#7FF0C8"/></svg>`;
+  const p = a.p;
+  return `<svg viewBox="-17 -17 34 34" width="34" height="34"><ellipse cx="0" cy="3" rx="13" ry="7.5" fill="#000" opacity=".12"/><ellipse cx="0" cy="1.5" rx="12.5" ry="7" fill="${p.shirt}"/><circle cx="-10" cy="-3.5" r="2.4" fill="${p.skin}"/><circle cx="10" cy="-3.5" r="2.4" fill="${p.skin}"/><circle cx="0" cy="-1" r="6.4" fill="${p.hair}"/><path d="M-4.2 -5.6a5 5 0 0 1 8.4 0" fill="${p.skin}"/></svg>`;
+}
+function ensureTok(a) {
+  if (a.ptok) return a.ptok;
+  const t = el('ptok' + (a.kind === 'bot' ? ' bot' : '') + (a.id === 'avi' ? ' me' : ''), planEl, {}, `<div class="rot">${topSVG(a)}</div>${a.kind === 'bot' ? '' : `<span class="pl"><i class="dot"></i>${esc(short(a.id))}</span>`}`);
+  if (a.kind !== 'bot') t.dataset.actor = a.id;
+  a.ptok = t; return t;
+}
+function planPos(a) {
+  const lx = a.x - TX0;
+  if (a.inCar) { const e = a.inCar; return {x: e.pl ? e.pl.x : lx, y: 62, face: 180}; }
+  if (a.walkingNow) return {x: lx, y: CORR_Y + CORR_H / 2 + ((a.id.charCodeAt(0) % 3) - 1) * 14, face: a.facing > 0 ? 90 : -90};
+  const r = roomAt(a.f, a.x);
+  if (!r) return {x: lx, y: CORR_Y + CORR_H / 2, face: 180};
+  if (a.kind === 'person' && a.seat && a.seat.r === r && r.ps.seats[a.seat.i]) return r.ps.seats[a.seat.i];
+  if (a.kind === 'person' && r.owner === a.id && atHome(a)) return r.ps.owner;
+  if (a.kind === 'person' && r.owner === a.id) return r.ps.owner;
+  // standing next to someone (couriers, visitors)
+  let best = null;
+  Object.values(A).forEach(o => { if (o !== a && o.f === a.f && o.status !== 'offline' && !o.walkingNow && Math.abs(o.x - a.x) < 70 && (!best || Math.abs(o.x - a.x) < Math.abs(best.x - a.x))) best = o; });
+  if (best) { const p = planPos(best); return {x: p.x + (a.x < best.x ? -30 : 30), y: p.y + 12, face: a.x < best.x ? 90 : -90}; }
+  return {x: Math.max(r.x - TX0 + 30, Math.min(r.x - TX0 + r.w - 30, lx)), y: PR_Y + 230, face: 0};
+}
+function updatePlan() {
+  const all = [...Object.values(A), ...bots];
+  all.forEach(a => {
+    const show = a.f === planFloor && !(a.kind === 'person' && a.status === 'offline') && !(a.kind === 'bot' && !showCouriers);
+    if (!show) { if (a.ptok) a.ptok.classList.add('hidden'); return; }
+    const t = ensureTok(a); t.classList.remove('hidden');
+    const p = planPos(a);
+    t.style.transform = `translate(${p.x}px,${p.y}px)`;
+    t.firstChild.style.transform = `rotate(${p.face || 0}deg)`;
+    if (a.kind === 'person') {
+      const r = roomAt(a.f, a.x);
+      t.classList.toggle('anon', !!(r && r.priv === 'locked' && !a.walkingNow && a.id !== 'avi'));
+      t.classList.toggle('oncall', !!(live.call && !live.call.ringing && (live.call.id === a.id || a.id === 'avi')));
+      t.classList.toggle('audio', a.el.classList.contains('audio'));
+      t.classList.toggle('sel', sel.type === 'person' && sel.id === a.id);
+      const d = t.querySelector('.pl .dot'); if (d) d.className = 'dot ' + a.status;
+    }
+  });
+}
+function syncPlanRoomStates() {
+  rooms.filter(r => r.f === planFloor && r.pel).forEach(r => {
+    r.pel.classList.toggle('dnd', !!(r.owner && A[r.owner].status === 'focus'));
+    r.pel.classList.toggle('sel', sel.type === 'room' && sel.id === r.id);
+    if (r.screen) r.screen.innerHTML = r.meeting && r.meeting.audio ? '<span class="tile" style="width:26px;height:10px;font-size:7px">AVI</span>' : '';
+  });
+}
+function renderPlanBar() {
+  const b = $('#planbar'); b.hidden = view !== 'plan';
+  if (view !== 'plan') return;
+  const ppl = Object.values(A).filter(a => a.f === planFloor && a.status !== 'offline').length;
+  b.innerHTML = `<div><b>${esc(fname(planFloor))}</b><br><span>${ppl} ${ppl === 1 ? 'person' : 'people'} on this floor</span></div>
+    <button type="button" class="iconbtn" data-pf="up" aria-label="Floor above" ${planFloor >= 7 ? 'disabled' : ''}>${IC.up}</button>
+    <button type="button" class="iconbtn" data-pf="down" aria-label="Floor below" ${planFloor <= 0 ? 'disabled' : ''}>${IC.down}</button>
+    <button type="button" class="iconbtn" data-pf="tower" aria-label="Back to tower view" title="Tower view (T)">${IC.tower}</button>`;
+}
+$('#planbar').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.pf === 'up') openPlan(planFloor + 1);
+  if (b.dataset.pf === 'down') openPlan(planFloor - 1);
+  if (b.dataset.pf === 'tower') setView('tower');
+});
+function openPlan(f) { f = Math.max(0, Math.min(7, f)); if (view !== 'plan' || f !== planFloor) { buildPlan(f); } setView('plan'); renderRail(true); }
+function setView(v) {
+  view = v;
+  world.hidden = v !== 'tower'; planEl.hidden = v !== 'plan';
+  stage.classList.toggle('planmode', v === 'plan');
+  $('#viewseg').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
+  if (v === 'plan') { if (!planEl.childElementCount) buildPlan(planFloor); fitPlan(true); }
+  renderPlanBar(); renderRail(true);
+}
+
+// ---------- cameras ----------
+const cam = {x: (TX0 + TX1) / 2, y: (TOP0 + GROUND + H) / 2, s: .4, tx: 0, ty: 0, ts: .4, follow: null};
+const pcam = {x: PW / 2, y: PD / 2, s: 1, tx: PW / 2, ty: PD / 2, ts: 1, follow: null};
+const curCam = () => view === 'tower' ? cam : pcam;
+let followAction = true;
+function avail() { const r = stage.getBoundingClientRect(); return {w: r.width, h: r.height - 64, cx: r.width / 2, cy: (r.height - 64) / 2 + 6, sw: r.width, sh: r.height}; }
+function setTarget(x, y, s) { cam.tx = x; cam.ty = y; if (s) cam.ts = Math.max(.18, Math.min(3, s)); }
+function overview() {
+  if (view === 'plan') { fitPlan(); return; }
+  cam.follow = null; const v = avail();
+  const s = Math.min(v.w / (TX1 - TX0 + 160), v.h / (GROUND + H - TOP0 + 110));
+  setTarget((TX0 + TX1) / 2, (TOP0 - 50 + GROUND + H) / 2, s);
+}
+function fitPlan(snap) {
+  const v = avail(); const s = Math.min(v.w / (PW + 70), (v.h - 60) / (PD + 70));
+  pcam.tx = PW / 2; pcam.ty = PD / 2 - 24 / s; pcam.ts = s;
+  if (snap) { pcam.x = pcam.tx; pcam.y = pcam.ty; pcam.s = s; }
+}
+function focusFloor(f) { cam.follow = null; const v = avail(); setTarget((TX0 + TX1) / 2, floorTop(f) + RH / 2, Math.min(v.w / (TX1 - TX0 + 60), v.h * .55 / H)); }
+function focusRoom(r) { cam.follow = null; const v = avail(); setTarget(r.x + r.w / 2, floorTop(r.f) + RH / 2, Math.min(v.w * .78 / r.w, v.h * .62 / RH, 2.6)); }
+function focusActor(a, s = 1.5) {
+  if (view === 'plan') { if (a.f !== planFloor) openPlan(a.f); return; }
+  cam.follow = null; setTarget(a.x, a.y - 50, s);
+}
+function frameBox(pts) {
+  if (view === 'plan') return;
+  cam.follow = null; const v = avail();
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  setTarget((x0 + x1) / 2, (y0 + y1) / 2 - 40, Math.min(v.w * .8 / (x1 - x0 + 160), v.h * .75 / (y1 - y0 + 240), 1.8));
+}
+function followIf(a, s = 1.25) { if (followAction && view === 'tower') { cam.follow = a; cam.ts = s; } }
+function stepCam(c, dt, node) {
+  if (c.follow) { c.tx = c.follow.x; c.ty = c.follow.y - 50; }
+  const k = 1 - Math.exp(-dt * 3.4);
+  c.x += (c.tx - c.x) * k; c.y += (c.ty - c.y) * k;
+  c.s = Math.exp(Math.log(c.s) + (Math.log(c.ts) - Math.log(c.s)) * k);
+  const v = avail();
+  node.style.transform = `translate(${v.cx - c.x * c.s}px,${v.cy - c.y * c.s}px) scale(${c.s})`;
+  node.style.setProperty('--inv', (1 / c.s).toFixed(3));
+}
+function updateCamera(dt) {
+  if (view === 'tower') { stepCam(cam, dt, world); world.classList.toggle('close', cam.s > 1.15); }
+  else stepCam(pcam, dt, planEl);
+}
+let drag = null;
+const inScene = t => world.contains(t) || planEl.contains(t) || t === stage;
+stage.addEventListener('pointerdown', e => { if (!inScene(e.target)) return; drag = {x: e.clientX, y: e.clientY, moved: false, target: e.target}; });
+addEventListener('pointermove', e => {
+  if (!drag) return;
+  const c = curCam(), dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  if (!drag.moved && Math.hypot(dx, dy) > 5) { drag.moved = true; stage.classList.add('dragging'); c.follow = null; }
+  if (drag.moved) { c.x -= dx / c.s; c.y -= dy / c.s; c.tx = c.x; c.ty = c.y; drag.x = e.clientX; drag.y = e.clientY; }
+});
+addEventListener('pointerup', () => {
+  if (!drag) return;
+  stage.classList.remove('dragging');
+  if (!drag.moved) {
+    const ac = drag.target.closest && drag.target.closest('[data-actor]');
+    const rm = drag.target.closest && drag.target.closest('[data-room]');
+    if (ac) { select({type: 'person', id: ac.dataset.actor}); if (view === 'tower') focusActor(A[ac.dataset.actor], 1.6); }
+    else if (rm) { select({type: 'room', id: rm.dataset.room}); if (view === 'tower') focusRoom(roomById[rm.dataset.room]); }
+  }
+  drag = null;
+});
+stage.addEventListener('wheel', e => {
+  if (!inScene(e.target)) return;
+  e.preventDefault(); const c = curCam(); c.follow = null;
+  const v = avail(), rect = stage.getBoundingClientRect();
+  const mx = e.clientX - rect.left - v.cx, my = e.clientY - rect.top - v.cy;
+  const wx = c.x + mx / c.s, wy = c.y + my / c.s;
+  const s2 = Math.max(.18, Math.min(3, c.s * Math.exp(-e.deltaY * .0015)));
+  c.s = c.ts = s2; c.x = c.tx = wx - mx / s2; c.y = c.ty = wy - my / s2;
+}, {passive: false});
+
+// ---------- notifications ----------
+// Rules: the message itself is instant; couriers are ambient. Only things that need you now raise a card.
+// Focus holds everything except calls (which are declined and logged). Low-priority events go to the activity log only.
+const inbox = [], activity = [], held = [];
+let nid = 0;
+function logActivity(text) { activity.unshift({text, at: simClock}); if (activity.length > 30) activity.pop(); if (tab === 'inbox') renderInsp(); }
+function notify(n) {
+  n.id = ++nid; n.at = simClock; n.unread = true;
+  inbox.unshift(n);
+  let shown = false;
+  if (me.status === 'focus' && n.kind !== 'call') { held.push(n); renderHeld(); }
+  else { showCard(n); shown = true; }
+  renderInboxCount(); if (tab === 'inbox') renderInsp();
+  return {item: n, shown};
+}
+function whereRoomLabel(id) { const a = A[id]; return a ? where(a) : ''; }
+const cards = new Map();
+function showCard(n) {
+  const box = $('#toasts');
+  const c = el('nc k-' + n.kind, box);
+  c.dataset.id = n.id;
+  const from = n.from;
+  const head = `<div class="nch">${from ? avHTML(from) : ''}<div><b>${esc(n.title)}</b><span>${esc(from ? whereRoomLabel(from) : '')}</span></div><button type="button" class="x" data-a="dismiss" aria-label="Dismiss">${IC.close}</button></div>`;
+  const acts = (n.actions || []).map((a, i) => `<button type="button" class="${a.primary ? 'primary' : a.danger ? 'danger' : ''}" data-i="${i}">${esc(a.label)}</button>`).join('');
+  c.innerHTML = head + (n.text ? `<p>${esc(n.text)}</p>` : '') + (acts ? `<div class="nca">${acts}</div>` : '');
+  cards.set(n.id, c);
+  while (box.children.length > 3) { const old = box.firstElementChild; cards.delete(+old.dataset.id); old.remove(); }
+  if (!n.sticky) { let t = 0; const iv = setInterval(() => { if (!c.isConnected) return clearInterval(iv); if (!c.matches(':hover') && !c.querySelector('form')) t += .25; if (t > 9) { clearInterval(iv); closeCard(n.id); } }, 250); }
+  return c;
+}
+function closeCard(id) { const c = cards.get(id); if (c) { c.remove(); cards.delete(id); } }
+$('#toasts').addEventListener('click', e => {
+  const c = e.target.closest('.nc'); if (!c) return;
+  const n = inbox.find(x => x.id === +c.dataset.id); if (!n) return;
+  const b = e.target.closest('button'); if (!b || b.closest('form')) return;
+  if (b.dataset.a === 'dismiss') { closeCard(n.id); return; }
+  const a = n.actions[+b.dataset.i]; if (!a) return;
+  markRead(n);
+  if (a.reply) { openQuickReply(c, n); return; }
+  closeCard(n.id); a.fn();
+});
+$('#toasts').addEventListener('submit', e => {
+  e.preventDefault();
+  const c = e.target.closest('.nc'); const n = inbox.find(x => x.id === +c.dataset.id);
+  const v = e.target.querySelector('input').value.trim(); if (!v || !n) return;
+  closeCard(n.id); sendMessage(n.from, v);
+});
+function openQuickReply(c, n) {
+  if (c.querySelector('form')) return;
+  const f = document.createElement('form');
+  f.innerHTML = `<input aria-label="Reply to ${esc(short(n.from))}" placeholder="Reply to ${esc(short(n.from))}" autocomplete="off"><button type="submit">Send</button>`;
+  c.appendChild(f); f.querySelector('input').focus();
+}
+function markRead(n) { if (!n.unread) return; n.unread = false; if (n.kind === 'dm' && unread[n.from]) unread[n.from] = Math.max(0, unread[n.from] - 1); renderInboxCount(); if (tab === 'inbox') renderInsp(); }
+function renderInboxCount() { const n = inbox.filter(x => x.unread).length; const c = $('#inboxCount'); c.hidden = !n; c.textContent = n; }
+function renderHeld() { const b = $('#held'); b.hidden = !held.length; b.textContent = `Focus · ${held.length} held`; }
+$('#held').addEventListener('click', () => setTab('inbox'));
+function onMyStatus(prev, s) {
+  syncMyStatus();
+  if (prev === 'focus' && held.length) {
+    const dms = held.filter(n => n.kind === 'dm'), missed = held.filter(n => n.kind === 'missed');
+    const names = [...new Set(held.map(n => n.from).filter(Boolean))].map(short).join(', ');
+    const parts = []; if (dms.length) parts.push(`${dms.length} message${dms.length > 1 ? 's' : ''}`); if (missed.length) parts.push(`${missed.length} missed call${missed.length > 1 ? 's' : ''}`);
+    held.length = 0; renderHeld();
+    showCard({id: ++nid, kind: 'digest', title: 'While you were focused', text: `${parts.join(' and ') || 'Some updates'} from ${names}.`, actions: [{label: 'Open inbox', primary: true, fn: () => setTab('inbox')}]});
+  }
+  if (s === 'focus') logActivity('You turned on focus mode. Notifications are held.');
+}
+
+// ---------- threads ----------
+const threads = {}, unread = {};
+const thread = id => threads[id] || (threads[id] = []);
+
+// ---------- actions ----------
+function where(a) {
+  if (a.status === 'offline') return 'Offline';
+  if (a.inCar) return 'In the elevator';
+  const r = roomAt(a.f, a.x);
+  if (!r) return `Elevator lobby · ${fshort(a.f)}`;
+  if (r.owner === a.id) return (a.id === 'avi' ? 'At your desk' : 'At their desk') + ` · ${fshort(r.f)}`;
+  if (r.priv === 'locked' && a.id !== 'avi') return `Private room · ${fshort(r.f)}`;
+  return `${r.name} · ${fshort(r.f)}`;
+}
+
+async function sendMessage(id, text) {
+  const t = A[id], msg = {me: true, text, state: t.status === 'offline' ? 'delivered' : 'delivered', at: simClock};
+  thread(id).push(msg); refreshThread(id);
+  const res = {reachedFloor: null, reachedRoom: null, state: 'delivered', read: false, reply: null, note: false};
+  await act(myBot, async () => {
+    myBot.carry(true); followIf(myBot);
+    if (t.status === 'offline') {
+      const off = officeOf(id);
+      await goTo(myBot, off.f, off.sp.desk - 30);
+      el('note', LO, {left:px(off.sp.desk - 10), top:px(floorTop(off.f) + RH - 48)}, IC.mail);
+      myBot.carry(false); res.note = true;
+      logActivity(`Your note is on ${short(id)}'s desk. They're offline.`);
+    } else {
+      await chase(myBot, t, 30);
+      res.reachedFloor = myBot.f; const rr = roomAt(myBot.f, t.x); res.reachedRoom = rr ? rr.id : null;
+      myBot.carry(false); flash(t, 'pinged', 1800);
+      if (t.status === 'focus') {
+        logActivity(`${short(id)} is in focus mode. Your message is waiting, no alert sent.`);
+      } else {
+        await wait(1300); msg.state = 'read'; res.read = true; refreshThread(id);
+        t.el.classList.add('talking'); await wait(1500); t.el.classList.remove('talking');
+        const rep = reply(id); res.reply = rep;
+        thread(id).push({me: false, text: rep, at: simClock}); unread[id] = (unread[id] || 0) + 1; refreshThread(id);
+        notify({kind: 'dm', from: id, title: `${PEOPLE[id].name} replied`, text: rep, actions: dmActions(id)});
+        myBot.carry(true); await wait(300);
+        await chase(myBot, me, 30);
+        myBot.carry(false);
+      }
+    }
+    res.state = msg.state; refreshThread(id);
+    const d = BOT_DOCK(); await goTo(myBot, d.f, d.x);
+    if (cam.follow === myBot) cam.follow = null;
+  });
+  return res;
+}
+function dmActions(id) {
+  return [{label: 'Reply', primary: true, reply: true}, {label: 'Open chat', fn: () => { select({type: 'person', id}); }}, {label: 'Show me', fn: () => { focusActor(A[id], 1.6); select({type: 'person', id}); }}];
+}
+
+async function incoming(id, text) {
+  const s = A[id];
+  thread(id).push({me: false, text, at: simClock});
+  unread[id] = (unread[id] || 0) + 1;
+  const {shown} = notify({kind: 'dm', from: id, title: PEOPLE[id].name, text, actions: dmActions(id)});
+  pingDesk('avi'); refreshThread(id); renderSoft();
+  const b = mkBot(id, PEOPLE[id].shirt);
+  b.carry(true);
+  const found = await chase(b, me, 30);
+  const floor = b.f;
+  b.carry(false); flash(me, 'pinged', 1600);
+  await wait(600);
+  await goTo(b, s.f, s.x - 20);
+  removeBot(b);
+  return {found, floor, toastShown: shown};
+}
+
+async function walkOver(id) {
+  const t = A[id], t0 = simClock, start = {f: me.f, x: me.x};
+  const res = {reached: false, floor: null, minutes: 0, focus: t.status === 'focus'};
+  await act(me, async () => {
+    releaseSeat(me); followIf(me, 1.3);
+    res.reached = await chase(me, t, 28); res.floor = me.f;
+    if (t.status === 'focus') {
+      me.el.classList.add('talking'); await wait(1200); me.el.classList.remove('talking');
+      logActivity(`You knocked on ${short(id)}'s door. They're in focus mode.`);
+    } else {
+      me.el.classList.add('talking'); t.el.classList.add('talking');
+      await wait(4800);
+      me.el.classList.remove('talking'); t.el.classList.remove('talking');
+    }
+    await goTo(me, start.f, start.x);
+    if (cam.follow === me) cam.follow = null;
+  });
+  res.minutes = (simClock - t0) / 60;
+  logActivity(`Walked to ${short(id)} and back: ${res.minutes.toFixed(0)} min away from your desk.`);
+  return res;
+}
+
+// calls
+let callEnded = null;
+const live = {call: null, meeting: null, huddle: null};
+function startCallVisual(id, ringing) {
+  const t = A[id];
+  links.set('call', {a: me, b: t, kind: ringing ? 'ring' : 'call'});
+  [me, t].forEach(a => a.el.classList.toggle('onphone', !ringing));
+  t.el.classList.toggle('ringing', !!ringing && live.call && live.call.dir === 'out');
+  me.el.classList.toggle('ringing', !!ringing && live.call && live.call.dir === 'in');
+}
+async function call(id, {autoEnd = 0} = {}) {
+  if (live.call) endCall(true);
+  const t = A[id];
+  const res = {accepted: false, reason: null, linked: false};
+  if (t.status === 'offline') { logActivity(`${short(id)} is offline. Couldn't call.`); res.reason = 'offline'; return res; }
+  live.call = {id, dir: 'out', ringing: true, t0: null}; renderLive();
+  startCallVisual(id, true); res.linked = true;
+  frameBox([{x: me.x, y: me.y}, {x: t.x, y: t.y}]);
+  await wait(1800);
+  if (!live.call || live.call.id !== id) return res;
+  if (t.status === 'focus') {
+    res.reason = 'focus';
+    logActivity(`${short(id)} declined automatically (focus mode).`);
+    showCard({id: ++nid, kind: 'info', from: id, title: `${short(id)} is in focus mode`, text: 'The call was declined automatically. Send a message instead?', actions: [{label: 'Send message', primary: true, fn: () => select({type: 'person', id})}]});
+    endCall(true); return res;
+  }
+  connectCall();
+  res.accepted = true;
+  const ended = new Promise(r => callEnded = r);
+  if (autoEnd) { await wait(autoEnd); endCall(); } else return res;
+  await ended; return res;
+}
+function connectCall() { live.call.ringing = false; live.call.t0 = simClock; startCallVisual(live.call.id, false); renderLive(); }
+async function incomingCall(id, {answerAfter = 0, decline = false} = {}) {
+  const t = A[id];
+  const res = {carded: false, accepted: false, autoDeclined: false};
+  if (me.status === 'focus') {
+    res.autoDeclined = true;
+    const n = {kind: 'missed', from: id, title: `Missed call from ${short(id)}`, text: 'Declined automatically while you were in focus mode.', actions: [{label: 'Call back', primary: true, fn: () => call(id)}]};
+    notify(n); logActivity(`Missed a call from ${short(id)} (focus mode).`);
+    return res;
+  }
+  if (live.call) endCall(true);
+  live.call = {id, dir: 'in', ringing: true, t0: null}; renderLive();
+  startCallVisual(id, true); t.el.classList.add('onphone');
+  const {item} = notify({kind: 'call', from: id, title: `${short(id)} is calling`, text: '', sticky: true, actions: [
+    {label: 'Answer', primary: true, fn: () => { if (live.call && live.call.id === id) { connectCall(); res.accepted = true; } }},
+    {label: 'Decline', danger: true, fn: () => { endCall(true); logActivity(`You declined ${short(id)}'s call.`); }},
+    {label: 'Message instead', fn: () => { endCall(true); select({type: 'person', id}); }},
+  ]});
+  res.carded = cards.has(item.id);
+  if (answerAfter) {
+    await wait(answerAfter);
+    const c = cards.get(item.id);
+    if (c) c.querySelector(decline ? '[data-i="1"]' : '[data-i="0"]').click();
+  } else {
+    await wait(12000);
+    if (live.call && live.call.ringing && live.call.id === id) { closeCard(item.id); endCall(true); notify({kind: 'missed', from: id, title: `Missed call from ${short(id)}`, text: '', actions: [{label: 'Call back', primary: true, fn: () => call(id)}]}); }
+  }
+  return res;
+}
+function endCall(silent) {
+  if (!live.call) return;
+  const t = A[live.call.id];
+  [me, t].forEach(a => a.el.classList.remove('onphone', 'ringing'));
+  links.delete('call');
+  if (!silent && !live.call.ringing) logActivity(`Call with ${short(t.id)} ended · ${fmtT((simClock - live.call.t0) / 12)}`);
+  live.call = null; renderLive();
+  if (callEnded) { callEnded(); callEnded = null; }
+}
+
+// meetings
+function roomMeetingUI(r) {
+  r.el.classList.toggle('live', !!r.meeting);
+  r.label.querySelector('em') && r.label.querySelector('em').remove();
+  if (r.meeting) r.label.insertAdjacentHTML('beforeend', `<em>● ${esc(r.meeting.title)}</em>`);
+  const tv = r.el.querySelector('.tv');
+  if (tv) tv.innerHTML = r.meeting && r.meeting.audio ? `<span class="tile">AVI</span>` : '';
+  syncPlanRoomStates();
+}
+async function startMeeting(r, ids, title) {
+  if (r.meeting) return;
+  r.meeting = {title, ids: new Set(), audio: false, walked: false};
+  roomMeetingUI(r); renderSoft();
+  logActivity(`${title} started in ${r.name}.`);
+  await Promise.all(ids.map(id => {
+    const a = A[id]; if (a.status === 'offline' || a.status === 'focus') return null;
+    return act(a, async () => { a.busy = true; await goSeat(a, r); if (r.meeting) r.meeting.ids.add(id); renderSoft(); });
+  }));
+}
+function meetingInvite(r, title) {
+  return notify({kind: 'meeting', title: `${title} is starting`, text: `${r.name} · ${fname(r.f)}. ${r.meeting ? r.meeting.ids.size : 0} people are in the room.`, sticky: true, actions: [
+    {label: 'Join by audio', primary: true, fn: () => joinAudio(r)},
+    {label: 'Walk in', fn: () => walkIn(r)},
+    {label: 'Skip', fn: () => logActivity(`You skipped ${title}.`)},
+  ]});
+}
+async function endMeeting(r) {
+  if (!r.meeting) return;
+  if (live.meeting && live.meeting.r === r) await leaveMeeting(r);
+  const ids = [...r.meeting.ids].filter(id => id !== 'avi'); r.meeting = null; roomMeetingUI(r); renderSoft();
+  await Promise.all(ids.map(id => act(A[id], async () => { await goHome(A[id]); A[id].busy = false; })));
+}
+function joinAudio(r) {
+  if (!r.meeting || live.meeting) return;
+  r.meeting.audio = true; me.el.classList.add('audio');
+  links.set('audio', {a: me, b: {x: r.x + r.w / 2, y: floorTop(r.f) + 50}, kind: 'audio'});
+  live.meeting = {r, mode: 'audio', t0: simClock}; renderLive(); roomMeetingUI(r); renderSoft();
+  frameBox([{x: me.x, y: me.y}, {x: r.x + r.w / 2, y: floorTop(r.f) + RH}]);
+  logActivity(`Joined ${r.meeting.title} by audio from your desk.`);
+}
+async function walkIn(r) {
+  if (!r.meeting || live.meeting) return;
+  live.meeting = {r, mode: 'walk', t0: simClock}; renderLive();
+  followIf(me, 1.2);
+  await act(me, () => goSeat(me, r));
+  if (r.meeting) { r.meeting.walked = true; r.meeting.ids.add('avi'); }
+  if (cam.follow === me) cam.follow = null;
+  renderSoft();
+}
+async function leaveMeeting(r) {
+  if (!live.meeting || live.meeting.r !== r) return;
+  const mode = live.meeting.mode; live.meeting = null; renderLive();
+  if (mode === 'audio') { me.el.classList.remove('audio'); links.delete('audio'); if (r.meeting) r.meeting.audio = false; roomMeetingUI(r); }
+  else { if (r.meeting) { r.meeting.ids.delete('avi'); r.meeting.walked = false; } await act(me, () => goHome(me)); }
+  renderSoft();
+}
+
+// huddle
+async function inviteHuddle(ids) {
+  const r = officeOf('avi'); const res = {arrived: [], declined: []};
+  if (!live.huddle) { live.huddle = new Set(); live.huddle.t0 = simClock; }
+  r.el.classList.add('huddle'); renderLive();
+  await Promise.all(ids.map(async id => {
+    const a = A[id];
+    if (a.status === 'focus' || a.status === 'offline') { res.declined.push(id); logActivity(`${short(id)} can't join the huddle: ${a.status === 'focus' ? 'focus mode' : 'offline'}.`); return; }
+    await act(a, async () => { a.busy = true; await goSeat(a, r); });
+    if (live.huddle) { live.huddle.add(id); renderLive(); }
+    res.arrived.push(id);
+  }));
+  return res;
+}
+async function endHuddle() {
+  if (!live.huddle) return;
+  const ids = [...live.huddle]; live.huddle = null; renderLive();
+  officeOf('avi').el.classList.remove('huddle');
+  await Promise.all(ids.map(id => act(A[id], async () => { await goHome(A[id]); A[id].busy = false; })));
+}
+
+function renderLive() {
+  const parts = [];
+  if (live.call) parts.push(`<div class="livechip"><i class="pulse"></i>${live.call.ringing ? (live.call.dir === 'in' ? 'Incoming from' : 'Calling') : 'On call with'} ${esc(short(live.call.id))} <span class="t" data-t="call"></span><button type="button" data-end="call">${live.call.ringing && live.call.dir === 'in' ? 'Decline' : 'End'}</button></div>`);
+  if (live.meeting) parts.push(`<div class="livechip"><i class="pulse"></i>${esc(live.meeting.r.meeting ? live.meeting.r.meeting.title : '')} · ${live.meeting.mode === 'audio' ? 'audio from your desk' : 'in the room'} <span class="t" data-t="meeting"></span><button type="button" data-end="meeting">Leave</button></div>`);
+  if (live.huddle) parts.push(`<div class="livechip"><i class="pulse"></i>Huddle in your office · ${live.huddle.size} joined <span class="t" data-t="huddle"></span><button type="button" data-end="huddle">End</button></div>`);
+  $('#live').innerHTML = parts.join('');
+}
+$('#live').addEventListener('click', e => {
+  const k = e.target.dataset && e.target.dataset.end;
+  if (k === 'call') endCall();
+  if (k === 'meeting' && live.meeting) leaveMeeting(live.meeting.r);
+  if (k === 'huddle') endHuddle();
+});
+function tickLive() {
+  const set = (k, t0) => { const n = $(`#live [data-t="${k}"]`); if (n && t0 != null) n.textContent = fmtT((simClock - t0) / 12); };
+  if (live.call) set('call', live.call.t0);
+  if (live.meeting) set('meeting', live.meeting.t0);
+  if (live.huddle) set('huddle', live.huddle.t0);
+}
+
+// ---------- off-screen pins (tower view) ----------
+function updatePins() {
+  const box = $('#pins');
+  if (view !== 'tower') { box.innerHTML = ''; return; }
+  const ids = new Set(Object.keys(unread).filter(id => unread[id] > 0));
+  if (live.call) ids.add(live.call.id);
+  const v = avail(); const out = [];
+  ids.forEach(id => {
+    const a = A[id]; if (!a || a.status === 'offline') return;
+    const sx = v.cx + (a.x - cam.x) * cam.s, sy = v.cy + (a.y - 30 - cam.y) * cam.s;
+    const m = 34, minX = m + 30, maxX = v.sw - m - 30, minY = m + 40, maxY = v.sh - 90;
+    if (sx > minX && sx < maxX && sy > minY && sy < maxY) return;
+    const cx = Math.max(minX, Math.min(maxX, sx)), cy = Math.max(minY, Math.min(maxY, sy));
+    const ang = Math.atan2(sy - cy, sx - cx) * 180 / Math.PI;
+    out.push(`<button type="button" class="pin ${live.call && live.call.id === id ? 'call' : ''}" data-pin="${id}" style="left:${cx}px;top:${cy}px" title="${esc(PEOPLE[id].name)} · ${esc(where(a))}">${avHTML(id)}${esc(short(id))}<i class="arr" style="transform:rotate(${ang}deg)"></i></button>`);
+  });
+  const html = out.join(''); if (box.innerHTML !== html) box.innerHTML = html;
+}
+$('#pins').addEventListener('click', e => { const b = e.target.closest('[data-pin]'); if (!b) return; const id = b.dataset.pin; focusActor(A[id], 1.6); select({type: 'person', id}); });
+
+// ---------- idle routines ----------
+let scenarioRunning = false, idleClock = 0;
+function idleTick(dt) {
+  idleClock += dt * SPEED;
+  if (idleClock < 7 || scenarioRunning) return;
+  idleClock = 0;
+  const pool = Object.values(A).filter(a => a.id !== 'avi' && a.status === 'active' && !a.busy && atHome(a) && !(live.call && live.call.id === a.id));
+  if (!pool.length) return;
+  const a = pool[Math.floor(Math.random() * pool.length)];
+  const team = rooms.find(r => r.f === a.home.f && r.type === 'team');
+  const dest = team && Math.random() < .6 ? team : roomById.random;
+  a.busy = true;
+  act(a, async () => { await goSeat(a, dest); await wait(3500); await goHome(a); a.busy = false; });
+}
+
+// ---------- inspector ----------
+let sel = {type: 'none'}, tab = 'inbox';
+const pb = $('#pb');
+const avHTML = id => `<span class="av" style="background:${PEOPLE[id].shirt}">${initials(PEOPLE[id].name)}<i class="dot ${A[id].status}"></i></span>`;
+const statusLabel = {active: 'Active', away: 'Away', focus: 'Focus mode', offline: 'Offline'};
+function setTab(t) {
+  tab = t;
+  document.querySelectorAll('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  renderInsp();
+}
+document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b && !b.disabled) setTab(b.dataset.tab); });
+function select(s) {
+  document.querySelectorAll('.actor.sel').forEach(n => n.classList.remove('sel'));
+  document.querySelectorAll('.room.sel').forEach(n => n.classList.remove('sel'));
+  sel = s;
+  if (s.type === 'person') {
+    A[s.id].el.classList.add('sel');
+    if (unread[s.id]) { unread[s.id] = 0; inbox.filter(n => n.from === s.id && n.kind === 'dm').forEach(n => n.unread = false); renderInboxCount(); }
+  }
+  if (s.type === 'room') roomById[s.id].el.classList.add('sel');
+  const d = document.querySelector('[data-tab="detail"]'); d.disabled = s.type === 'none';
+  syncPlanRoomStates();
+  setTab(s.type === 'none' ? 'inbox' : 'detail');
+}
+const kindLabel = {dm: 'Message', call: 'Call', missed: 'Missed call', meeting: 'Meeting', info: 'Update'};
+function renderInsp() {
+  if (tab === 'inbox') {
+    const fresh = inbox.filter(n => n.unread), old = inbox.filter(n => !n.unread).slice(0, 12);
+    const row = n => `<button type="button" class="ib ${n.unread ? 'new' : ''}" data-ib="${n.id}">${n.from ? avHTML(n.from) : `<span class="av" style="background:var(--accent)">${IC.users.replace('<svg', '<svg width="15" height="15"')}</span>`}<b>${esc(n.from ? (n.from === 'avi' ? 'You' : PEOPLE[n.from].name) : n.title)}<span class="kind">${kindLabel[n.kind] || ''}</span></b><time>${fmtClock(n.at)}</time><p>${esc(n.text || n.title)}</p></button>`;
+    pb.innerHTML = `${held.length ? `<p class="hint">Focus mode is holding ${held.length} notification${held.length > 1 ? 's' : ''}. They're listed here and you'll get a summary when you switch back to Active.</p>` : ''}
+      <p class="eyebrow">Needs you ${fresh.length ? `<button type="button" data-readall>Mark all read</button>` : ''}</p>
+      ${fresh.length ? `<div class="flgroup">${fresh.map(row).join('')}</div>` : '<p class="empty">You\'re all caught up.</p>'}
+      ${old.length ? `<p class="eyebrow">Earlier</p><div class="flgroup">${old.map(row).join('')}</div>` : ''}
+      <p class="eyebrow">Building activity</p>
+      ${activity.length ? `<ul class="act-log">${activity.slice(0, 10).map(a => `<li><time>${fmtClock(a.at)}</time><span>${esc(a.text)}</span></li>`).join('')}</ul>` : '<p class="empty">Quiet so far. Things that don\'t need you land here instead of popping up.</p>'}`;
+  } else if (tab === 'people') {
+    const byFloor = [7, 6, 5, 4, 3, 2].map(f => {
+      const ids = Object.keys(PEOPLE).filter(id => A[id].home.f === f);
+      return `<div class="flgroup"><p class="eyebrow">${esc(fname(f))}</p>${ids.map(id => `
+        <button type="button" class="prow" data-person="${id}">${avHTML(id)}<span class="meta"><b>${esc(id === 'avi' ? 'Avi (you)' : PEOPLE[id].name)}</b><span data-live="where-${id}">${esc(where(A[id]))}</span></span>${unread[id] ? `<span class="unread">${unread[id]}</span>` : ''}</button>`).join('')}</div>`;
+    }).join('');
+    pb.innerHTML = `<p class="lede">You see everyone's presence and location, but only your own conversations. Private rooms you're not in stay frosted.</p>${byFloor}`;
+  } else if (sel.type === 'person') {
+    const a = A[sel.id], id = sel.id, mine = id === 'avi', st = a.status;
+    const acts = mine ? '' : `<div class="acts">
+      <button type="button" class="act primary" data-do="msg">${IC.send}<span>Send message<small>Instant, courier shows it</small></span></button>
+      <button type="button" class="act" data-do="call" ${st === 'offline' ? 'disabled' : ''}>${IC.phone}<span>Call<small>Stay at your desk</small></span></button>
+      <button type="button" class="act" data-do="walk" ${st === 'offline' ? 'disabled' : ''}>${IC.walk}<span>Walk over<small>Leave your office</small></span></button>
+      <button type="button" class="act" data-do="huddle" ${st === 'offline' ? 'disabled' : ''}>${IC.users}<span>Invite to huddle<small>They come to you</small></span></button></div>`;
+    pb.innerHTML = `<div class="who">${avHTML(id)}<div><b>${esc(mine ? 'Avi (you)' : PEOPLE[id].name)}</b><span>${esc(PEOPLE[id].role)}</span></div></div>
+      <dl class="facts"><dt>Status</dt><dd><span class="pill"><i class="dot ${st}"></i>${statusLabel[st]}</span></dd>
+      <dt>Right now</dt><dd data-live="where-${id}">${esc(where(a))}</dd><dt>Home</dt><dd>${esc(fname(a.home.f))}</dd></dl>
+      ${acts}
+      <button type="button" class="act" data-do="plan">${IC.plan}<span>See ${mine ? 'your' : 'their'} floor plan</span></button>
+      ${mine ? '<p class="hint">Change your status at the top. Focus closes your blinds, holds notifications and declines calls. Away sends you to the café.</p>' : `
+      <p class="eyebrow">Messages</p><div class="thread" id="thread"></div>
+      <form class="compose" id="compose"><input id="compose-in" autocomplete="off" placeholder="Message ${esc(short(id))}" aria-label="Message text"><button type="submit" aria-label="Send">${IC.send}</button></form>`}`;
+    if (!mine) refreshThread(id);
+  } else if (sel.type === 'room') {
+    const r = roomById[sel.id];
+    const inside = Object.values(A).filter(a => a.status !== 'offline' && !a.inCar && a.f === r.f && a.x >= r.x && a.x < r.x + r.w);
+    let body;
+    if (r.priv === 'locked') body = `<p class="lede">#${esc(r.ch)} is a private channel you're not in. You can see the room is in use (${inside.length} ${inside.length === 1 ? 'person' : 'people'}), but not who or what is said.</p>`;
+    else {
+      const ppl = inside.length ? inside.map(a => `<button type="button" class="prow" data-person="${a.id}">${avHTML(a.id)}<span class="meta"><b>${esc(a.id === 'avi' ? 'Avi (you)' : PEOPLE[a.id].name)}</b><span>${esc(PEOPLE[a.id].role)}</span></span></button>`).join('') : '<p class="empty">Nobody here right now.</p>';
+      let mt = '';
+      if (r.type === 'meeting') {
+        const inThis = live.meeting && live.meeting.r === r;
+        mt = r.meeting ? `<p class="eyebrow">Live: ${esc(r.meeting.title)}</p><div class="acts">
+          ${inThis ? `<button type="button" class="act primary" data-do="leave">${IC.close}<span>Leave meeting</span></button>` : `
+          <button type="button" class="act primary" data-do="audio" ${live.meeting ? 'disabled' : ''}>${IC.headset}<span>Join by audio<small>Stay at your desk</small></span></button>
+          <button type="button" class="act" data-do="walkin" ${live.meeting ? 'disabled' : ''}>${IC.walk}<span>Walk in<small>Take the elevator</small></span></button>`}
+          <button type="button" class="act" data-do="endmeet">${IC.close}<span>End for everyone</span></button></div>`
+          : `<div class="acts"><button type="button" class="act" data-do="startmeet">${IC.users}<span>Start a test meeting<small>3 colleagues walk in</small></span></button></div>`;
+      }
+      body = `<dl class="facts"><dt>Channel</dt><dd>${r.owner ? (r.owner === 'avi' ? 'Your office' : 'Direct messages') : '#' + esc(r.ch)}</dd><dt>Access</dt><dd>${r.priv === 'member' ? 'Private · you\'re a member' : 'Open to the workspace'}</dd><dt>Floor</dt><dd>${esc(fname(r.f))}</dd></dl>${mt}<p class="eyebrow">In the room</p><div class="flgroup">${ppl}</div>`;
+    }
+    pb.innerHTML = `<div class="who"><div><b>${esc(r.name)}</b><span>${esc(fname(r.f))}</span></div></div>${body}<button type="button" class="act" data-do="plan">${IC.plan}<span>Open this floor plan</span></button>`;
+  }
+}
+function renderSoft() { if (tab !== 'detail' || sel.type === 'room') renderInsp(); renderRail(); }
+function refreshThread(id) {
+  if (tab === 'people') { renderInsp(); return; }
+  if (tab !== 'detail' || sel.type !== 'person' || sel.id !== id) return;
+  const box = $('#thread'); if (!box) return;
+  const t = thread(id);
+  const tick = s => s === 'read' ? 'read ✓✓' : 'delivered ✓';
+  box.innerHTML = t.length ? t.map(m => `<div class="msg ${m.me ? 'me' : ''}">${esc(m.text)}<small>${fmtClock(m.at)}${m.me ? ' · ' + tick(m.state) : ''}</small></div>`).join('') : '<p class="empty">No messages yet.</p>';
+  box.scrollTop = box.scrollHeight;
+}
+pb.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.hasAttribute('data-readall')) { inbox.forEach(n => n.unread = false); Object.keys(unread).forEach(k => unread[k] = 0); renderInboxCount(); renderInsp(); return; }
+  if (b.dataset.ib) { const n = inbox.find(x => x.id === +b.dataset.ib); if (n) { markRead(n); if (n.from) { select({type: 'person', id: n.from}); focusActor(A[n.from], 1.6); } } return; }
+  if (b.dataset.person) { select({type: 'person', id: b.dataset.person}); focusActor(A[b.dataset.person], 1.6); return; }
+  const d = b.dataset.do; if (!d) return;
+  if (d === 'plan') { openPlan(sel.type === 'person' ? A[sel.id].f : roomById[sel.id].f); return; }
+  if (sel.type === 'person') {
+    const id = sel.id;
+    if (d === 'msg') sendMessage(id, defaultMsg());
+    if (d === 'call') call(id);
+    if (d === 'walk') walkOver(id);
+    if (d === 'huddle') inviteHuddle([id]);
+  } else if (sel.type === 'room') {
+    const r = roomById[sel.id];
+    if (d === 'audio') joinAudio(r);
+    if (d === 'walkin') walkIn(r);
+    if (d === 'leave') leaveMeeting(r);
+    if (d === 'endmeet') endMeeting(r);
+    if (d === 'startmeet') {
+      const ids = Object.values(A).filter(a => a.id !== 'avi' && a.status === 'active' && !a.busy).sort((m, n) => Math.abs(m.home.f - r.f) - Math.abs(n.home.f - r.f)).slice(0, 3).map(a => a.id);
+      startMeeting(r, ids, r.name + ' sync').then(() => meetingInvite(r, r.name + ' sync'));
+    }
+  }
+});
+pb.addEventListener('submit', e => {
+  e.preventDefault();
+  const inp = $('#compose-in'); const v = inp.value.trim();
+  if (!v || sel.type !== 'person') return;
+  inp.value = ''; sendMessage(sel.id, v);
+});
+const DEFAULT_MSGS = ['Can you take a look at this when you have a minute?', 'Are we still on for the 2pm review?', 'Quick question about the launch checklist.'];
+let dm = 0; const defaultMsg = () => DEFAULT_MSGS[dm++ % DEFAULT_MSGS.length];
+function liveTick() {
+  pb.querySelectorAll('[data-live^="where-"]').forEach(n => { const id = n.dataset.live.slice(6); const w = where(A[id]); if (n.textContent !== w) n.textContent = w; });
+}
+
+// ---------- floor rail ----------
+let railSig = '';
+function currentFloor() { if (view === 'plan') return planFloor; let best = 0, d = 1e9; for (let f = 0; f <= 7; f++) { const dd = Math.abs(floorTop(f) + RH / 2 - cam.y); if (dd < d) { d = dd; best = f; } } return cam.s > .7 ? best : -1; }
+function renderRail(force) {
+  const cur = currentFloor();
+  const data = [7, 6, 5, 4, 3, 2, 1, 0].map(f => {
+    const ppl = Object.values(A).filter(a => a.f === f && a.status !== 'offline' && !a.inCar);
+    const ur = Object.keys(unread).some(id => unread[id] > 0 && A[id].f === f);
+    return {f, dots: ppl.map(a => a.status).join(','), ur};
+  });
+  const sig = cur + '|' + view + '|' + JSON.stringify(data);
+  if (!force && sig === railSig) return; railSig = sig;
+  $('#floors').innerHTML = data.map(d => `<button type="button" class="fl ${d.f === cur ? 'cur' : ''}" data-floor="${d.f}" title="${esc(fname(d.f))}"><span class="code">${fshort(d.f)}</span><span class="nm"><b>${esc(FNAME[d.f])}</b><span>${d.dots ? d.dots.split(',').map(s => `<i class="${s}"></i>`).join('') : ''}</span></span>${d.ur ? '<i class="ur"></i>' : '<span></span>'}</button>`).join('');
+}
+$('#floors').addEventListener('click', e => {
+  const b = e.target.closest('[data-floor]'); if (!b) return;
+  const f = +b.dataset.floor;
+  if (view === 'plan') { openPlan(f); return; }
+  if (currentFloor() === f) openPlan(f); else focusFloor(f);
+});
+
+// ---------- top bar ----------
+$('#viewseg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.v === 'plan') openPlan(currentFloor() >= 0 ? currentFloor() : me.f); else setView('tower'); });
+$('#speed').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; SPEED = +b.dataset.s; $('#speed').querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', n === b)); });
+function syncMyStatus() { $('#mystatus').querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', n.dataset.s === me.status)); }
+$('#mystatus').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; followIf(me, 1.3); setStatus('avi', b.dataset.s).then(() => { if (cam.follow === me) cam.follow = null; }); });
+$('#b-over').addEventListener('click', overview);
+$('#b-me').addEventListener('click', () => { if (view === 'plan') openPlan(me.f); else focusActor(me, 1.7); select({type: 'person', id: 'avi'}); });
+$('#b-follow').addEventListener('click', e => { followAction = !followAction; e.currentTarget.setAttribute('aria-pressed', followAction); if (!followAction) cam.follow = null; });
+$('#b-couriers').addEventListener('click', e => { showCouriers = !showCouriers; e.currentTarget.setAttribute('aria-pressed', showCouriers); bots.forEach(b => b.el.style.visibility = showCouriers ? '' : 'hidden'); });
+// search
+const q = $('#q'), qres = $('#qres');
+function runSearch() {
+  const s = q.value.trim().toLowerCase();
+  if (!s) { qres.hidden = true; return; }
+  const ppl = Object.keys(PEOPLE).filter(id => PEOPLE[id].name.toLowerCase().includes(s) || PEOPLE[id].role.toLowerCase().includes(s)).map(id => ({k: 'p', id, label: PEOPLE[id].name, sub: where(A[id])}));
+  const rms = rooms.filter(r => !r.owner && (r.name.toLowerCase().includes(s) || (r.ch || '').includes(s))).map(r => ({k: 'r', id: r.id, label: r.name, sub: '#' + r.ch + ' · ' + fshort(r.f)}));
+  const all = [...ppl, ...rms].slice(0, 8);
+  qres.innerHTML = all.length ? all.map((x, i) => `<button type="button" class="${i ? '' : 'on'}" data-k="${x.k}" data-id="${x.id}">${x.k === 'p' ? avHTML(x.id) : ''}${esc(x.label)}<small>${esc(x.sub)}</small></button>`).join('') : '<p class="empty">No match</p>';
+  qres.hidden = false;
+}
+function pick(b) {
+  if (!b) return; q.value = ''; qres.hidden = true; q.blur();
+  if (b.dataset.k === 'p') { const a = A[b.dataset.id]; select({type: 'person', id: a.id}); if (view === 'plan') openPlan(a.f); else focusActor(a, 1.6); }
+  else { const r = roomById[b.dataset.id]; select({type: 'room', id: r.id}); if (view === 'plan') openPlan(r.f); else focusRoom(r); }
+}
+q.addEventListener('input', runSearch);
+q.addEventListener('keydown', e => { if (e.key === 'Enter') pick(qres.querySelector('button')); if (e.key === 'Escape') { q.value = ''; qres.hidden = true; q.blur(); } });
+qres.addEventListener('click', e => pick(e.target.closest('button')));
+addEventListener('keydown', e => {
+  if (e.target.matches('input')) return;
+  if (e.key === '/') { e.preventDefault(); q.focus(); }
+  else if (e.key === 'p' || e.key === 'P') openPlan(currentFloor() >= 0 ? currentFloor() : me.f);
+  else if (e.key === 't' || e.key === 'T') setView('tower');
+  else if (e.key === 'f' || e.key === 'F') $('#b-me').click();
+  else if (e.key === 'Escape') { if (view === 'plan') setView('tower'); else select({type: 'none'}); }
+  else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    const d = e.key === 'ArrowUp' ? 1 : -1;
+    if (view === 'plan') openPlan(planFloor + d); else { const c = currentFloor(); focusFloor(Math.max(0, Math.min(7, (c >= 0 ? c : me.f) + d))); }
+    e.preventDefault();
+  }
+});
+
+// ---------- scenarios (scripted tests) ----------
+async function settle() {
+  endCall(true);
+  cards.forEach((c, id) => closeCard(id));
+  for (const r of rooms) if (r.meeting) await endMeeting(r);
+  await endHuddle();
+  if (me.status !== 'active') await setStatus('avi', 'active');
+  await Promise.all(Object.values(A).map(a => a.q));
+  if (!atHome(me)) await act(me, () => goHome(me));
+}
+const inRect = (p, R) => p.x >= R.x && p.x <= R.x + R.w && p.y >= R.y && p.y <= R.y + R.h;
+const SCEN = [
+  {id: 'msg-desk', title: 'Message a teammate at their desk', desc: 'Courier rides to F5, Tolu reads it, the reply raises one card.', run: async c => {
+    await setStatus('tolu', 'active'); await A.tolu.q;
+    const r = await sendMessage('tolu', 'Can the new onboarding flow make this sprint?');
+    c.check('Courier reached Tolu on F5', r.reachedFloor === 6);
+    c.check('Message marked read', r.read);
+    c.check('Reply arrived as a notification card', !!r.reply && inbox.some(n => n.from === 'tolu' && n.kind === 'dm'));
+  }},
+  {id: 'msg-away', title: 'Message someone who stepped out', desc: 'Zainab is away. The courier skips her office and finds her in the café.', run: async c => {
+    await setStatus('zainab', 'away'); await A.zainab.q;
+    const r = await sendMessage('zainab', 'Do we have the July signup numbers?');
+    c.check('Delivered in the Café, not her empty office', r.reachedRoom === 'random');
+    c.check('Found her on the Lobby floor', r.reachedFloor === 1);
+    c.check('Reply received', !!r.reply);
+  }},
+  {id: 'msg-off', title: 'Message someone offline', desc: 'Ngozi is offline. A note is left on her desk; no card for you.', run: async c => {
+    await setStatus('ngozi', 'offline');
+    const before = inbox.length;
+    const r = await sendMessage('ngozi', 'Leave form for next week is in your inbox.');
+    c.check('Note left on her desk', r.note);
+    c.check('Shown as delivered, not read', r.state === 'delivered' && !r.read);
+    c.check('Logged to building activity, no pop-up', inbox.length === before && activity[0].text.includes('Ngozi'));
+  }},
+  {id: 'call', title: 'Call instead of walking', desc: 'Phone Kemi. Both pick up their phones; nobody leaves their desk.', run: async c => {
+    await setStatus('kemi', 'active'); await A.kemi.q;
+    const before = {f: me.f, x: me.x};
+    let posed = false;
+    const p = call('kemi', {autoEnd: 5000});
+    await wait(2600); posed = me.el.classList.contains('onphone') && A.kemi.el.classList.contains('onphone');
+    const r = await p;
+    c.check('Kemi answered', r.accepted);
+    c.check('Both hold phones to their ears (no floating icons)', posed);
+    c.check('You never left your desk', me.f === before.f && Math.abs(me.x - before.x) < 2);
+  }},
+  {id: 'call-focus', title: 'Call someone in focus mode', desc: 'Dayo has his blinds down. The call is declined automatically.', run: async c => {
+    await setStatus('dayo', 'focus'); await A.dayo.q;
+    const r = await call('dayo', {autoEnd: 2000});
+    c.check('Call was not answered', !r.accepted);
+    c.check('Reason given: focus mode', r.reason === 'focus');
+  }},
+  {id: 'in-call', title: 'Incoming call', desc: 'Femi calls you. A ringing card appears with Answer, Decline, Message instead.', run: async c => {
+    await setStatus('femi', 'active'); await A.femi.q;
+    const r = await incomingCall('femi', {answerAfter: 1500});
+    c.check('Ringing card shown', r.carded);
+    c.check('Answered from the card', r.accepted && live.call && !live.call.ringing);
+    await wait(2500); endCall();
+    c.check('Call ended cleanly', !live.call);
+  }},
+  {id: 'focus', title: 'Focus mode holds notifications', desc: 'You go into focus. A message and a call arrive; nothing pops up until you\'re back.', run: async c => {
+    await setStatus('avi', 'focus');
+    const m = await incoming('uche', 'Revenue dashboard is ready for review.');
+    const cl = await incomingCall('bisi');
+    c.check('No card while focused', !m.toastShown && !cl.carded);
+    c.check('Call declined automatically and logged as missed', cl.autoDeclined && inbox.some(n => n.kind === 'missed' && n.from === 'bisi'));
+    c.check('Held counter shows 2', held.length === 2);
+    await setStatus('avi', 'active');
+    c.check('One summary card when you\'re back', held.length === 0 && [...$('#toasts').children].some(n => n.textContent.includes('While you were focused')));
+  }},
+  {id: 'meet-audio', title: 'Join a meeting by audio', desc: 'Weekly sync starts in the F5 Sprint room. You accept from the meeting card.', run: async c => {
+    const r = roomById['product-sync'];
+    await startMeeting(r, ['tolu', 'ife', 'kemi', 'femi'], 'Weekly sync');
+    c.check('4 attendees walked into the Sprint room', r.meeting && r.meeting.ids.size === 4);
+    const {item} = meetingInvite(r, 'Weekly sync');
+    await wait(800); const card = cards.get(item.id); if (card) card.querySelector('[data-i="0"]').click();
+    c.check('Joined by audio from the card', r.meeting && r.meeting.audio && me.el.classList.contains('audio'));
+    openPlan(6); await wait(1200);
+    const R = r.ps.table, inRoom = ['tolu', 'ife', 'kemi', 'femi'].filter(id => A[id].ptok && !A[id].ptok.classList.contains('hidden') && inRect(planPos(A[id]), {x: R.x - 40, y: R.y - 40, w: R.w + 80, h: R.h + 80}));
+    c.check('Floor plan shows all 4 around the table', inRoom.length === 4);
+    await wait(2500); setView('tower');
+    c.check('You stayed at your desk on F4', me.f === 5 && atHome(me));
+    await leaveMeeting(r); await endMeeting(r);
+    c.check('Attendees went back to their desks', ['tolu', 'ife', 'kemi', 'femi'].every(id => atHome(A[id])));
+  }},
+  {id: 'meet-walk', title: 'Walk to a meeting', desc: 'Ops sync in the F1 Huddle room. You take the elevator down.', run: async c => {
+    const r = roomById.ops;
+    await setStatus('seun', 'active');
+    await startMeeting(r, ['amaka', 'seun'], 'Ops sync');
+    await walkIn(r);
+    c.check('You rode the elevator to F1', me.f === 2);
+    c.check('You are seated in the Huddle room', roomAt(me.f, me.x) === r && me.el.classList.contains('sit'));
+    await wait(3000);
+    await leaveMeeting(r); await endMeeting(r);
+    c.check('Back at your desk', atHome(me));
+  }},
+  {id: 'huddle', title: 'Desk huddle', desc: 'Invite Kemi, Femi and Dayo. Anyone free walks over; focus mode declines.', run: async c => {
+    await setStatus('dayo', 'focus');
+    const r = await inviteHuddle(['kemi', 'femi', 'dayo']);
+    c.check('Kemi and Femi walked to your office', r.arrived.includes('kemi') && r.arrived.includes('femi'));
+    c.check('Dayo declined (focus mode)', r.declined.includes('dayo'));
+    await wait(3500); await endHuddle();
+    c.check('Everyone went back', atHome(A.kemi) && atHome(A.femi));
+  }},
+  {id: 'walk', title: 'Walk over vs. message', desc: 'Walk to Chidi on F2 and back, then compare the time away from your desk.', run: async c => {
+    await setStatus('chidi', 'active'); await A.chidi.q;
+    const r = await walkOver('chidi');
+    c.check('You reached Chidi on F2', r.reached && r.floor === 3);
+    c.check(`Away from desk for ${r.minutes.toFixed(0)} sim minutes (a message costs you 0)`, r.minutes > 0);
+    c.check('Back at your desk', atHome(me));
+  }},
+  {id: 'incoming', title: 'Incoming message', desc: 'Amaka messages you. The card is instant; her courier follows.', run: async c => {
+    const r = await incoming('amaka', 'A customer on WhatsApp wants an install date. Can you check?');
+    c.check('Card shown instantly', r.toastShown);
+    c.check('Amaka\'s courier reached you on F4', r.found && r.floor === 5);
+    c.check('Unread shows in the inbox', inbox.some(n => n.from === 'amaka' && n.unread));
+  }},
+];
+const scenState = {};
+const scenBox = $('#scen');
+function renderScen() {
+  const done = Object.values(scenState).filter(s => s.status === 'pass' || s.status === 'fail');
+  const passed = done.filter(s => s.status === 'pass').length;
+  scenBox.innerHTML = `<div class="ph"><h2>Test scenarios</h2><span class="summary">${done.length ? `${passed}/${done.length} passed` : `${SCEN.length} scripted checks`}</span><button type="button" class="act primary" data-run="all" ${scenarioRunning ? 'disabled' : ''}>Run all</button><button type="button" class="iconbtn" data-close aria-label="Close">${IC.close}</button></div>
+  <div class="scenlist">${SCEN.map(s => { const st = scenState[s.id] || {status: 'idle', checks: []}; return `<div class="srow"><b>${esc(s.title)}</b><p>${esc(s.desc)}</p><div class="run"><span class="state ${st.status}">${st.status === 'idle' ? 'not run' : st.status}</span><button type="button" data-run="${s.id}" ${scenarioRunning ? 'disabled' : ''}>Run</button></div>${st.checks.length ? `<ul class="checks">${st.checks.map(k => `<li class="${k.ok ? '' : 'bad'}">${esc(k.label)}</li>`).join('')}</ul>` : ''}</div>`; }).join('')}</div>`;
+}
+async function runScen(s) {
+  const st = scenState[s.id] = {status: 'running', checks: []}; renderScen();
+  const ctx = {check: (label, ok) => { st.checks.push({label, ok: !!ok}); renderScen(); }};
+  logActivity(`Test started: ${s.title}`);
+  try { await settle(); await s.run(ctx); } catch (err) { console.error(err); ctx.check('Scenario threw: ' + err.message, false); }
+  st.status = st.checks.every(k => k.ok) ? 'pass' : 'fail'; renderScen();
+}
+async function runMany(list) {
+  if (scenarioRunning) return;
+  scenarioRunning = true; renderScen();
+  for (const s of list) await runScen(s);
+  scenarioRunning = false; renderScen();
+  if (view === 'tower') focusActor(me, 1.2);
+}
+scenBox.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.hasAttribute('data-close')) { scenBox.hidden = true; return; }
+  const id = b.dataset.run; if (!id) return;
+  runMany(id === 'all' ? SCEN : SCEN.filter(s => s.id === id));
+});
+$('#b-tests').addEventListener('click', () => { scenBox.hidden = !scenBox.hidden; if (!scenBox.hidden) renderScen(); });
+
+// ---------- main loop ----------
+let last = performance.now(), slowAcc = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  for (const t of [...tweens]) { t.t += dt * SPEED; const p = Math.min(1, t.t / t.dur); t.fn(p); if (p >= 1) { tweens.delete(t); t.res(); } }
+  simClock += dt * SPEED * 12;
+  if (view === 'tower') drawLinks(); else updatePlan();
+  updateCamera(dt); idleTick(dt);
+  slowAcc += dt;
+  if (slowAcc > .25) { slowAcc = 0; liveTick(); tickLive(); updatePins(); renderRail(); $('#time').textContent = fmtClock(simClock); if (view === 'plan') syncPlanRoomStates(); }
+  requestAnimationFrame(frame);
+}
+renderInsp(); renderLive(); syncMyStatus(); renderInboxCount();
+overview(); cam.x = cam.tx; cam.y = cam.ty; cam.s = cam.ts;
+renderRail(true);
+addEventListener('resize', () => { if (view === 'plan') fitPlan(); else if (!cam.follow) overview(); });
+requestAnimationFrame(frame);
+setTimeout(() => logActivity('You arrived at your desk on F4.'), 300);
+setTimeout(() => { if (!scenarioRunning) incoming('kemi', 'Morning! PR #482 is ready for your review.'); }, 4000);
+})();
+</script>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zedu Tower Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single reading column with a sticky contents rail on wide screens */
+:root{
+  --paper:#EFF2EF; --card:#FFFFFF; --ink:#1B2320; --muted:#5D6964; --line:#D6DDD8; --chip:#E6EBE7;
+  --accent:#17695A; --accent-soft:#D3E9E2; --accent-ink:#FFFFFF;
+  --ok:#2E9E68; --away:#D49A2C; --focus:#C9503C; --off:#98A19C; --signal:#B97E16;
+  --font-display:"Familjen Grotesk","Helvetica Neue",Arial,sans-serif;
+  --font-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root{
+  --paper:#121715; --card:#1A211E; --ink:#E5EBE7; --muted:#9BA7A1; --line:#2D3733; --chip:#242D29;
+  --accent:#43B89D; --accent-soft:#1E3B33; --accent-ink:#06140F; --signal:#E3A944; color-scheme:dark}}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15.5px;line-height:1.6}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:32px max(20px,env(safe-area-inset-left,0px)) 80px max(20px,env(safe-area-inset-right,0px));display:grid;grid-template-columns:200px minmax(0,1fr);gap:48px}
+nav.toc{position:sticky;top:24px;align-self:start;display:flex;flex-direction:column;gap:4px;font-size:13.5px}
+nav.toc a{color:var(--muted);text-decoration:none;padding:3px 0}
+nav.toc a:hover{color:var(--ink)}
+nav.toc b{font-family:var(--font-display);font-size:18px;margin-bottom:8px;color:var(--ink)}
+.open{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700;border-radius:10px;padding:10px 16px;margin-top:12px;width:max-content}
+main{min-width:0}
+h1{font-family:var(--font-display);font-size:42px;line-height:1.05;letter-spacing:-.02em;margin:0 0 12px;text-wrap:balance}
+h2{font-family:var(--font-display);font-size:25px;letter-spacing:-.01em;margin:56px 0 12px;text-wrap:balance;scroll-margin-top:20px}
+h3{font-size:16px;margin:24px 0 6px}
+p,li{max-width:68ch}
+.lede{font-size:18px;color:var(--muted);margin:0 0 20px}
+.badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:3px 9px;border-radius:999px;margin-bottom:14px}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;background:var(--chip)}
+td:first-child{font-weight:600;white-space:nowrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+kbd{font-family:var(--font-mono);font-size:12.5px;border:1px solid var(--line);background:var(--card);border-radius:5px;padding:1px 6px}
+code{font-family:var(--font-mono);font-size:13px;background:var(--chip);padding:1px 5px;border-radius:4px}
+.rules{counter-reset:r;list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
+.rules li{counter-increment:r;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px 12px 52px;position:relative}
+.rules li::before{content:counter(r);position:absolute;left:16px;top:12px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px;display:grid;place-items:center}
+.note{border-left:3px solid var(--signal);padding:4px 0 4px 14px;color:var(--muted)}
+footer{margin-top:64px;color:var(--muted);font-size:13px}
+@media (max-width:820px){.wrap{grid-template-columns:1fr;gap:12px}nav.toc{position:static;flex-direction:row;flex-wrap:wrap;gap:4px 14px}nav.toc b{width:100%}h1{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="toc" aria-label="Contents">
+  <b>Zedu Tower</b>
+  <a href="#what">What this is</a>
+  <a href="#map">How Zedu maps to the building</a>
+  <a href="#views">Two views</a>
+  <a href="#status">Statuses</a>
+  <a href="#actions">Actions</a>
+  <a href="#notify">Notifications</a>
+  <a href="#tests">Test scenarios</a>
+  <a href="#keys">Shortcuts</a>
+  <a href="#mock">What's real, what's mocked</a>
+  <a href="#next">What's next</a>
+  <a class="open" href="./">Open the prototype →</a>
+</nav>
+<main>
+<span class="badge">Prototype · v3</span>
+<h1>A Zedu workspace you can walk around</h1>
+<p class="lede">Zedu Tower turns a chat workspace into an office building. Teams are floors, channels are rooms, and people are where their presence says they are. This page explains what you're looking at and how to test it.</p>
+
+<h2 id="what">What this is</h2>
+<p>A clickable prototype, built to test whether a spatial view makes it easier to see who's around, reach the right person, and join conversations without hunting through a sidebar. It runs entirely in the browser on sample data. Nothing is connected to Zedu yet.</p>
+<p>You're always looking through <b>one person's eyes</b>: Avi, on F4 Engineering. Everyone sees the same building, but your view shows only your own conversations, and private rooms you're not in stay frosted. The camera, notifications and inbox are yours alone.</p>
+<p class="note">Works on computers and tablets. Phones get a "needs a bigger screen" message; chat on a phone stays in the regular Zedu app.</p>
+
+<h2 id="map">How Zedu maps to the building</h2>
+<div class="tbl"><table>
+<thead><tr><th>In Zedu</th><th>In the tower</th></tr></thead>
+<tbody>
+<tr><td>Workspace</td><td>The whole tower (Nexprove).</td></tr>
+<tr><td>Team or group</td><td>A floor. F4 is Engineering, F2 is Sales &amp; Growth, and so on.</td></tr>
+<tr><td>Public channel</td><td>A shared room on that floor. Its name and <code>#channel</code> show when you hover or zoom in.</td></tr>
+<tr><td>Private channel</td><td>A room with a lock. If you're a member it looks normal; if not, it's frosted and you only see that it's in use.</td></tr>
+<tr><td>Direct messages</td><td>The other person's office. Your office is where your DMs land.</td></tr>
+<tr><td>Member</td><td>A person. Where they stand is their presence: at their desk, in the café, in a meeting.</td></tr>
+<tr><td>Huddle</td><td>People walk into your office and stand around your desk.</td></tr>
+<tr><td>Meeting or call</td><td>A meeting room fills up. Joining by audio keeps you at your desk with a headset on; walking in takes the elevator.</td></tr>
+<tr><td>Lobby</td><td>Reception, the café (<code>#random</code>) and the lounge. Away people wait here.</td></tr>
+</tbody></table></div>
+
+<h2 id="views">Two views</h2>
+<h3>Tower</h3>
+<p>A side cutaway of the whole building. Good for "who's around and where". Drag to pan, scroll to zoom, click a room or a person to fly there. The left rail lists floors with a dot per person currently on them and a red dot where unread messages are waiting.</p>
+<h3>Floor plan</h3>
+<p>One floor from above, like an architect's plan: walls, doors, desks, meeting tables, lifts and stairs. Good for "who's in that meeting" and "who's sitting with whom". Open it with <kbd>P</kbd>, the Tower / Floor plan switch, or by clicking a floor in the rail twice. Both views run the same simulation, so people move in both.</p>
+
+<h2 id="status">Statuses</h2>
+<div class="tbl"><table>
+<thead><tr><th>Status</th><th>What you see</th><th>What it does</th></tr></thead>
+<tbody>
+<tr><td><span class="dot" style="background:var(--ok)"></span>Active</td><td>At their desk or moving around.</td><td>Answers calls and messages.</td></tr>
+<tr><td><span class="dot" style="background:var(--away)"></span>Away</td><td>Sitting in the café.</td><td>Messages reach them there; they reply later.</td></tr>
+<tr><td><span class="dot" style="background:var(--focus)"></span>Focus</td><td>Office blinds down; red door in the floor plan.</td><td>Calls are declined automatically, messages wait quietly. For you, notifications are held.</td></tr>
+<tr><td><span class="dot" style="background:var(--off)"></span>Offline</td><td>Empty desk with an "Offline" sign.</td><td>Messages are left as a note on the desk.</td></tr>
+</tbody></table></div>
+
+<h2 id="actions">Actions</h2>
+<p>Click any person, then use the buttons in the Details panel.</p>
+<div class="tbl"><table>
+<thead><tr><th>Action</th><th>What happens</th></tr></thead>
+<tbody>
+<tr><td>Send message</td><td>Delivered instantly. Your courier bot then carries it to wherever they are, including the café, so you can see where it went and when it was read.</td></tr>
+<tr><td>Call</td><td>You both pick up phones and a line links your offices. Nobody moves.</td></tr>
+<tr><td>Walk over</td><td>You leave your desk, take the elevator and talk in person. The activity log tells you how long you were away.</td></tr>
+<tr><td>Invite to huddle</td><td>They walk to your office. People in focus mode decline.</td></tr>
+<tr><td>Join a meeting</td><td>From the meeting card or the room: <b>Join by audio</b> (stay at your desk) or <b>Walk in</b> (take a seat).</td></tr>
+</tbody></table></div>
+
+<h2 id="notify">How notifications work</h2>
+<ol class="rules">
+<li><b>Messages are instant.</b> The courier is decoration you can turn off with the Couriers button. Nothing waits for an animation.</li>
+<li><b>Only things that need you pop up</b>: a message to you, an incoming call, a meeting starting. At most three cards, top right, each with its own buttons: Reply inline, Answer or Decline, Join by audio or Walk in.</li>
+<li><b>Everything else goes quietly</b> to "Building activity" in the Inbox: calls ending, notes left on desks, people declining.</li>
+<li><b>Focus mode holds everything.</b> Calls are declined and logged as missed. A "Focus · N held" counter sits in the top bar, and you get one summary when you switch back to Active.</li>
+<li><b>Off-screen people get an edge marker.</b> If someone with unread messages, or someone you're on a call with, is out of view, a marker on the screen edge points to them. Click it to fly there.</li>
+</ol>
+
+<h2 id="tests">Test scenarios</h2>
+<p>Open <b>Tests</b> in the top bar. Each scenario scripts a situation, plays it out in front of you, and ticks off checks. Use <b>4×</b> speed to get through them quickly, or <b>Run all</b>.</p>
+<div class="tbl"><table>
+<thead><tr><th>Scenario</th><th>What it proves</th></tr></thead>
+<tbody>
+<tr><td>Message a teammate at their desk</td><td>Courier reaches Tolu on F5, message is read, the reply arrives as one card.</td></tr>
+<tr><td>Message someone who stepped out</td><td>Zainab is away; the courier skips her empty office and finds her in the café.</td></tr>
+<tr><td>Message someone offline</td><td>A note is left on Ngozi's desk; delivered but not read; no pop-up for you.</td></tr>
+<tr><td>Call instead of walking</td><td>Kemi answers; both hold phones; you never leave your desk.</td></tr>
+<tr><td>Call someone in focus mode</td><td>Dayo's call is declined automatically, with the reason.</td></tr>
+<tr><td>Incoming call</td><td>Femi calls; a ringing card appears; answering from the card connects.</td></tr>
+<tr><td>Focus mode holds notifications</td><td>A message and a call arrive while you focus; nothing pops up; one summary when you're back.</td></tr>
+<tr><td>Join a meeting by audio</td><td>Four people walk into the Sprint room; you join from the card; the floor plan shows them around the table; you stay at your desk.</td></tr>
+<tr><td>Walk to a meeting</td><td>You ride the elevator to F1 and take a seat in the Huddle room.</td></tr>
+<tr><td>Desk huddle</td><td>Kemi and Femi walk over; Dayo declines because of focus mode.</td></tr>
+<tr><td>Walk over vs. message</td><td>Measures how long walking to Chidi keeps you away from your desk.</td></tr>
+<tr><td>Incoming message</td><td>Amaka's card appears instantly; her courier follows; unread shows in the inbox.</td></tr>
+</tbody></table></div>
+
+<h2 id="keys">Shortcuts</h2>
+<div class="tbl"><table>
+<tbody>
+<tr><td><kbd>/</kbd></td><td>Find a person or room</td></tr>
+<tr><td><kbd>P</kbd> / <kbd>T</kbd></td><td>Floor plan / tower view</td></tr>
+<tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Floor above / below</td></tr>
+<tr><td><kbd>F</kbd></td><td>Fly to yourself</td></tr>
+<tr><td><kbd>Esc</kbd></td><td>Back to tower, or clear the selection</td></tr>
+</tbody></table></div>
+
+<h2 id="mock">What's real, what's mocked</h2>
+<p>Everything is sample data: 13 people, 8 floors, canned replies. The clock runs about 12 times faster than real time so walks and meetings don't take minutes. There's no login, no backend and no Zedu connection. Each visitor's browser runs its own copy, so two people testing at once won't see each other.</p>
+
+<h2 id="next">What's next</h2>
+<ul>
+<li>A bigger building: more, smaller rooms per floor, a conference hall floor, a cafeteria, a game room and a music room.</li>
+<li>Different interior styles per floor, and larger meeting rooms where latecomers stand behind seated people.</li>
+<li>Follow a person: the camera stays on them as they move.</li>
+<li>Richer statuses ("On a call with Kemi", "Offsite", "Asleep") on hover and click, respecting privacy settings.</li>
+<li>Hover hints that say what each floor, room and person is.</li>
+<li>People walk through doors instead of cutting through walls.</li>
+</ul>
+<footer>Zedu Tower prototype by Nexprove. Feedback goes to Avi.</footer>
+</main>
+</div>
+</body>
+</html>
