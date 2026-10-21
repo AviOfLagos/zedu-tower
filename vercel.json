@@ -1,0 +1,8 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    { "source": "/docs.html", "destination": "/guide/", "permanent": true },
+    { "source": "/app", "destination": "/app/", "permanent": true },
+    { "source": "/guide", "destination": "/guide/", "permanent": true }
+  ]
+}
