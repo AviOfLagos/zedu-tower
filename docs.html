@@ -4,6 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Zedu Tower Guide</title>
+<meta name="description" content="How Zedu Tower works: what each floor, room and status means, how notifications behave, and the scripted test scenarios.">
+<link rel="canonical" href="https://zedu-tower.vercel.app/docs.html">
+<meta name="theme-color" content="#17695A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317695A'/%3E%3Crect x='17' y='12' width='30' height='42' rx='2' fill='%23EFF2EF'/%3E%3Cg fill='%2317695A'%3E%3Crect x='22' y='18' width='8' height='6' rx='1'/%3E%3Crect x='34' y='18' width='8' height='6' rx='1'/%3E%3Crect x='22' y='28' width='8' height='6' rx='1'/%3E%3Crect x='34' y='28' width='8' height='6' rx='1'/%3E%3Crect x='22' y='38' width='8' height='6' rx='1'/%3E%3Crect x='34' y='38' width='8' height='6' rx='1'/%3E%3Crect x='28' y='46' width='8' height='8'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zedu Tower">
+<meta property="og:title" content="Zedu Tower Guide">
+<meta property="og:description" content="How Zedu Tower works: what each floor, room and status means, how notifications behave, and the scripted test scenarios.">
+<meta property="og:url" content="https://zedu-tower.vercel.app/docs.html">
+<meta property="og:image" content="https://zedu-tower.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zedu Tower: a cutaway office tower with lit rooms and people on each floor.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zedu Tower Guide">
+<meta name="twitter:description" content="How Zedu Tower works: what each floor, room and status means, how notifications behave, and the scripted test scenarios.">
+<meta name="twitter:image" content="https://zedu-tower.vercel.app/og.png">
+<meta name="twitter:image:alt" content="Zedu Tower: a cutaway office tower with lit rooms and people on each floor.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
@@ -77,7 +96,7 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
   <a class="open" href="./">Open the prototype →</a>
 </nav>
 <main>
-<span class="badge">Prototype · v4</span>
+<span class="badge">Prototype · v5</span>
 <h1>A Zedu workspace you can walk around</h1>
 <p class="lede">Zedu Tower turns a chat workspace into an office building. Teams are floors, channels are rooms, and people are where their presence says they are. This page explains what you're looking at, what everything means, and how to test it.</p>
 
@@ -97,7 +116,7 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
 <tr><td>Private channel</td><td>A room with a lock. If you're a member it looks normal; if not, it's frosted and you only see that it's in use.</td></tr>
 <tr><td>Direct messages</td><td>The other person's office. Your office is where your DMs land.</td></tr>
 <tr><td>Member</td><td>A person. Where they are is their presence: at their desk, in a meeting, in the cafeteria, in the lift.</td></tr>
-<tr><td>Huddle</td><td>People walk into your office and sit or stand around your desk.</td></tr>
+<tr><td>Call or huddle</td><td>One conversation: people are either on the phone where they are, or with you in person after you invite them over or walk over.</td></tr>
 <tr><td>Meeting or call</td><td>A meeting room fills up. Joining by audio keeps you at your desk with a headset on; walking in takes the lift.</td></tr>
 <tr><td>Shared floors</td><td>Conference, Cafeteria &amp; Play, Lobby and Basement belong to everyone, not to one team.</td></tr>
 <tr><td>Facilities</td><td>WCs, kitchens, print rooms, storage. Part of the building, not channels.</td></tr>
@@ -124,8 +143,8 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
 <p>A side cutaway of the whole building. Good for "who's around and where". Drag to pan, scroll to zoom, click a room or person to fly there. Each floor shows all its rooms in one strip, so rooms from the window row and the inner row sit side by side. People in the corridor appear slightly faded.</p>
 <h3>Floor plan</h3>
 <p>One floor from above: walls, doors, windows, desks in 4-seat pods, meeting tables, booths, lifts and stairs. Good for "who's in that meeting" and "who's sitting with whom". Open it with <kbd>P</kbd>, the Tower / Floor plan switch, or by clicking a floor in the left rail twice. Both views run the same simulation.</p>
-<h3>Following someone</h3>
-<p>Double-click a person, or press <b>Follow</b> in their details. The camera stays on them as they walk, ride the lift and change floors, in both views. A green "Following" chip at the top shows what they're doing; press Stop, press <kbd>Esc</kbd>, or drag the view to stop following.</p>
+<h3>Focusing on someone</h3>
+<p>Click a person and the camera zooms in and follows them. Their room becomes a sharp window and everything else is dimmed and slightly blurred, so you only look at what matters. The window moves with them as they walk, ride the lift and change floors, in both views. Click a room to put the window on that room instead. A green "Following" chip shows what they're doing; press Stop or drag the view to stop following, and <kbd>Esc</kbd> to clear the focus.</p>
 
 <h2 id="status">Statuses and privacy</h2>
 <div class="tbl"><table>
@@ -146,11 +165,14 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
 <tbody>
 <tr><td>Send message</td><td>Delivered instantly. Your courier bot then carries it to wherever they are, so you can see where it went and when it was read. Turn couriers off with the Couriers button.</td></tr>
 <tr><td>Call</td><td>You both pick up phones and a line links you. Nobody moves. If they're already on a call, you're told who with.</td></tr>
-<tr><td>Walk over</td><td>You leave your desk, take the lift and talk in person. The activity log says how long you were away.</td></tr>
-<tr><td>Invite to huddle</td><td>They walk to your office. People on Do not disturb decline.</td></tr>
+<tr><td>Add to call</td><td>While you're talking to someone, call more people. They join the same conversation by phone and stay where they are.</td></tr>
+<tr><td>Invite over</td><td>They come to you. You get up from your desk and everyone stands together. Invite as many people as you like. If you're on the phone with them, they hang up and walk over: the call becomes a chat in person.</td></tr>
+<tr><td>Walk over</td><td>You go to them, take the lift if needed, and stand right next to them until you end the conversation.</td></tr>
 <tr><td>Join a meeting</td><td>From the meeting card or the room: <b>Join by audio</b> (stay at your desk) or <b>Walk in</b> (take a seat).</td></tr>
-<tr><td>Follow</td><td>The camera keeps that person in view as they move.</td></tr>
+<tr><td>Follow</td><td>The camera keeps that person in view as they move. Clicking someone does this automatically.</td></tr>
 </tbody></table></div>
+<h3>One conversation at a time</h3>
+<p>Calls and get-togethers are the same thing: a <b>conversation</b>. Everyone in it is either on the phone (where they are) or with you in person. The chip at the top lists who's with you and who's on the phone, with one End button. Ending it hangs up the phones and walks everyone, you included, back to their desks. Remove one person from their details panel.</p>
 
 <h2 id="rooms">Special rooms</h2>
 <div class="cards">
@@ -170,7 +192,7 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
 </ol>
 
 <h2 id="tests">Test scenarios</h2>
-<p>Open <b>Tests</b> in the top bar. Each scenario scripts a situation, plays it out in front of you and ticks off checks. Use <b>4×</b> speed, or <b>Run all</b> (about four minutes at 4×).</p>
+<p>Open <b>Tests</b> in the top bar. Each scenario scripts a situation, plays it out in front of you and ticks off checks. Use <b>4×</b> speed, or <b>Run all</b> (21 scenarios, about five minutes at 4×).</p>
 <div class="tbl"><table>
 <thead><tr><th>Scenario</th><th>What it proves</th></tr></thead>
 <tbody>
@@ -185,12 +207,15 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
 <tr><td>Walk to a meeting</td><td>You take the lift to F2 and sit down in the Huddle room.</td></tr>
 <tr><td>Packed meeting room</td><td>Eleven people, eight seats: three stand behind.</td></tr>
 <tr><td>All-hands in the conference hall</td><td>26 people take the lifts to F7; Bisi goes on stage; front rows fill first.</td></tr>
-<tr><td>Desk huddle</td><td>Kemi and Femi walk over; Dayo declines because of Do not disturb.</td></tr>
+<tr><td>Call several people</td><td>Kemi, Uche and Chidi join one call from three floors; nobody moves; ending hangs up everyone.</td></tr>
+<tr><td>Turn a call into a chat in person</td><td>On the phone with Femi, Invite over: he hangs up and comes to your office, you get up to meet him, and it stays one conversation.</td></tr>
+<tr><td>Invite several people over</td><td>Kemi and Joy come and stand with you; Dayo declines (Do not disturb); then Uche joins the same conversation by phone.</td></tr>
+<tr><td>Click to focus</td><td>Clicking Kemi zooms in, follows her and shows the focus window; the window moves with her to the kitchen; clearing the selection removes it.</td></tr>
 <tr><td>People use doors, not walls</td><td>Samples ~150 positions of a walk between floors and fails if any step goes through a wall.</td></tr>
 <tr><td>Follow a person</td><td>The camera stays on Joy across floors, in the tower and in the floor plan.</td></tr>
 <tr><td>Private status</td><td>Bisi shows presence only; Kemi shares activity and location.</td></tr>
 <tr><td>Hover hints</td><td>Hovering a team space, a meeting room, a floor and a person explains what each one is.</td></tr>
-<tr><td>Walk over vs. message</td><td>Measures how long walking to Chidi keeps you away from your desk.</td></tr>
+<tr><td>Walk over</td><td>You walk to Chidi on F3, end up right next to him and stay until you end the conversation.</td></tr>
 <tr><td>Incoming message</td><td>Amaka's card appears instantly; her courier follows; unread shows in the inbox.</td></tr>
 </tbody></table></div>
 
@@ -210,6 +235,13 @@ footer{margin-top:64px;color:var(--muted);font-size:13px}
 <p>It's built to stay light: flat SVG and CSS, no 3D, no images, and only the floor you're looking at is drawn in plan view.</p>
 
 <h2 id="changes">What changed</h2>
+<h3>v5</h3>
+<ul>
+<li>Click to focus: the camera zooms in and follows the person, and a sharp window on their room dims and blurs everything else.</li>
+<li>Calls and huddles are one conversation. Add people by phone, invite several over, or walk over; a call turns into a chat in person when you invite them over.</li>
+<li>When people come over, you get up and stand with them; when you walk over, you stay next to them.</li>
+<li>Link previews: title, description and a share image for Slack, WhatsApp, X and LinkedIn.</li>
+</ul>
 <h3>v4</h3>
 <ul>
 <li>A bigger building: 10 floors, 42 people, open-plan desks in 4-seat pods, smaller private offices, more meeting rooms and phone booths.</li>

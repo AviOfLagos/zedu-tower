@@ -3,6 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="A clickable prototype that turns a Zedu workspace into an office tower: teams are floors, channels are rooms, and you can see who's around, call them, or walk over.">
+<link rel="canonical" href="https://zedu-tower.vercel.app/">
+<meta name="theme-color" content="#17695A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317695A'/%3E%3Crect x='17' y='12' width='30' height='42' rx='2' fill='%23EFF2EF'/%3E%3Cg fill='%2317695A'%3E%3Crect x='22' y='18' width='8' height='6' rx='1'/%3E%3Crect x='34' y='18' width='8' height='6' rx='1'/%3E%3Crect x='22' y='28' width='8' height='6' rx='1'/%3E%3Crect x='34' y='28' width='8' height='6' rx='1'/%3E%3Crect x='22' y='38' width='8' height='6' rx='1'/%3E%3Crect x='34' y='38' width='8' height='6' rx='1'/%3E%3Crect x='28' y='46' width='8' height='8'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Zedu Tower">
+<meta property="og:title" content="Zedu Tower">
+<meta property="og:description" content="A clickable prototype that turns a Zedu workspace into an office tower: teams are floors, channels are rooms, and you can see who's around, call them, or walk over.">
+<meta property="og:url" content="https://zedu-tower.vercel.app/">
+<meta property="og:image" content="https://zedu-tower.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Zedu Tower: a cutaway office tower with lit rooms and people on each floor.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zedu Tower">
+<meta name="twitter:description" content="A clickable prototype that turns a Zedu workspace into an office tower: teams are floors, channels are rooms, and you can see who's around, call them, or walk over.">
+<meta name="twitter:image" content="https://zedu-tower.vercel.app/og.png">
+<meta name="twitter:image:alt" content="Zedu Tower: a cutaway office tower with lit rooms and people on each floor.">
 <title>Zedu Tower</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -429,7 +448,7 @@ svg{display:block}
 .dbtn svg{width:15px;height:15px}
 .dbtn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
 .dsep{width:1px;height:22px;background:var(--line);margin:0 3px}
-#live{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:22;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none}
+#live{position:absolute;left:16px;top:14px;z-index:22;display:flex;flex-direction:column;gap:6px;align-items:flex-start;pointer-events:none}
 #stage.planmode #live{top:74px}
 .livechip{pointer-events:auto;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--paper);border-radius:999px;padding:5px 6px 5px 12px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow);white-space:nowrap}
 .livechip .t{font-family:var(--font-mono);font-weight:500;opacity:.8}
@@ -439,6 +458,14 @@ svg{display:block}
 .livechip.follow button{background:var(--accent-ink);color:var(--accent)}
 .pulse{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.4s infinite;display:inline-block;flex:none}
 @keyframes pulse{50%{opacity:.35}}
+/* focus window: everything outside the selected room is dimmed and slightly blurred */
+#spot{position:absolute;inset:0;z-index:12;pointer-events:none;--sx:0px;--sy:0px;--sw:0px;--sh:0px}
+#spot .veil{position:absolute;inset:0;background:rgba(14,20,18,.36);backdrop-filter:blur(2.5px) saturate(.7);-webkit-backdrop-filter:blur(2.5px) saturate(.7);
+  -webkit-mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);mask-image:linear-gradient(#000 0 0),linear-gradient(#000 0 0);
+  -webkit-mask-size:100% 100%,var(--sw) var(--sh);mask-size:100% 100%,var(--sw) var(--sh);
+  -webkit-mask-position:0 0,var(--sx) var(--sy);mask-position:0 0,var(--sx) var(--sy);
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-composite:xor;mask-composite:exclude}
+#spot .frame{position:absolute;left:var(--sx);top:var(--sy);width:var(--sw);height:var(--sh);border-radius:4px;box-shadow:0 0 0 2px rgba(255,255,255,.92),0 0 0 6px color-mix(in srgb,var(--accent) 40%,transparent),0 20px 50px rgba(0,0,0,.3)}
 #toasts{position:absolute;right:14px;top:14px;z-index:30;display:flex;flex-direction:column;gap:8px;width:320px;pointer-events:none}
 .nc{pointer-events:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;gap:8px;animation:slide .25s ease}
 @keyframes slide{from{opacity:0;transform:translateX(16px)}}
@@ -546,6 +573,7 @@ svg{display:block}
     </div>
     <div id="plan" hidden></div>
     <div class="planbar" id="planbar" hidden></div>
+    <div id="spot" hidden><div class="veil"></div><div class="frame"></div></div>
     <div id="pins"></div>
     <div id="live"></div>
     <div id="toasts" aria-live="polite"></div>
@@ -1143,9 +1171,10 @@ function activity(a, viewer = 'avi') {
   if (a.status === 'offline') return {text: hidden ? 'Offline' : (a.note || 'Offline'), hidden};
   if (a.status === 'offsite') return {text: hidden ? 'Offsite' : (a.note || 'Working remotely'), hidden};
   if (hidden) return {text: a.status === 'focus' ? 'Do not disturb' : a.status === 'away' ? 'Away' : 'Busy', hidden: true};
+  const cm = convo && convo.members.get(a.id);
+  if (cm && cm.mode === 'here') return {text: 'Talking with you in person', link: {person: 'avi'}};
   if (a.callWith) return {text: `On a call with ${a.callWith === 'avi' ? 'you' : PEOPLE[a.callWith].name}`, link: {person: a.callWith}};
-  if (live.call && !live.call.ringing && live.call.id === a.id) return {text: 'On a call with you', link: {person: 'avi'}};
-  if (a.id === 'avi' && live.call && !live.call.ringing) return {text: `On a call with ${PEOPLE[live.call.id].name}`, link: {person: live.call.id}};
+  if (a.id === 'avi' && convo && convo.members.size) return {text: `In a conversation with ${[...convo.members.keys()].map(first).join(', ')}`, sub: convoSummary(), link: {person: [...convo.members.keys()][0]}};
   const mr = a.seat && a.seat.r.meeting && a.seat.r.meeting.ids.has(a.id) ? a.seat.r : null;
   if (mr) return {text: `In ${mr.meeting.title}`, sub: mr.name + ' · ' + fshort(mr.f), link: {room: mr.id}};
   if (a.id === 'avi' && live.meeting) return {text: `In ${live.meeting.r.meeting ? live.meeting.r.meeting.title : 'a meeting'} (audio)`, link: {room: live.meeting.r.id}};
@@ -1230,7 +1259,8 @@ function updatePlan() {
     if (a.kind === 'person') {
       const r = roomAtPlan(a.f, a.x, a.y);
       t.classList.toggle('anon', !!(r && r.priv === 'locked' && a.id !== 'avi'));
-      t.classList.toggle('oncall', !!(a.callWith || (live.call && !live.call.ringing && (live.call.id === a.id || a.id === 'avi'))));
+      t.classList.toggle('oncall', !!(a.callWith || (a.id === 'avi' && convoPhone())));
+      t.classList.toggle('ringing', a.el.classList.contains('ringing'));
       t.classList.toggle('audio', a.el.classList.contains('audio'));
       t.classList.toggle('sel', sel.type === 'person' && sel.id === a.id);
       t.classList.toggle('followed', following === a);
@@ -1292,7 +1322,7 @@ let followAction = true, following = null;
 function avail() { const r = stage.getBoundingClientRect(); return {w: r.width, h: r.height - 64, cx: r.width / 2, cy: (r.height - 64) / 2 + 6, sw: r.width, sh: r.height}; }
 function setTarget(x, y, s) { cam.tx = x; cam.ty = y; if (s) cam.ts = clamp(s, .12, 3); }
 function overview() {
-  stopFollow(true); railFloor = null;
+  stopFollow(true); railFloor = null; spotOn = false;
   if (view === 'plan') { fitPlan(); return; }
   cam.follow = null; const v = avail();
   setTarget((TX0 + TX1) / 2, (TOP0 - 50 + GROUND + H) / 2, Math.min(v.w / (TX1 - TX0 + 160), v.h / (GROUND + H - TOP0 + 110)));
@@ -1318,13 +1348,17 @@ function frameBox(pts) {
   setTarget((x0 + x1) / 2, (y0 + y1) / 2 - 40, Math.min(v.w * .8 / (x1 - x0 + 160), v.h * .75 / (y1 - y0 + 240), 1.8));
 }
 function followIf(a, s = 1.25) { if (followAction && view === 'tower' && !following) { cam.follow = a; cam.ts = s; } }
-function startFollow(a) {
+function focusScale(a, isPlan) {
+  const v = avail(), r = inBuilding(a) ? roomAtPlan(a.f, a.x, a.y) : a.home.r;
+  return isPlan ? clamp(Math.min(v.w * .5 / (r ? r.w : 300), v.h * .62 / (r ? r.h : 200)), .9, 2) : clamp(Math.min(v.w * .42 / (r ? r.tw : 200), v.h * .5 / RH), 1.3, 2.1);
+}
+function startFollow(a, quiet) {
   if (following) following.el.classList.remove('followed');
   following = a; cam.follow = a; pcam.follow = a;
-  cam.ts = Math.max(cam.ts, 1.5); pcam.ts = Math.max(pcam.ts, 1.1);
+  cam.ts = focusScale(a, false); pcam.ts = focusScale(a, true);
   a.el.classList.add('followed');
   if (view === 'plan' && a.f !== planFloor) openPlan(a.f, true);
-  renderLive(); logActivity(`Following ${a.id === 'avi' ? 'yourself' : PEOPLE[a.id].name}.`);
+  renderLive(); if (!quiet) logActivity(`Following ${a.id === 'avi' ? 'yourself' : PEOPLE[a.id].name}.`);
 }
 function stopFollow(silent) {
   if (!following) return;
@@ -1348,6 +1382,38 @@ function stepCam(c, dt, node, isPlan) {
 function updateCamera(dt) {
   if (view === 'tower') { stepCam(cam, dt, world, false); world.classList.toggle('close', cam.s > 1.15); }
   else { stepCam(pcam, dt, planEl, true); planEl.classList.toggle('close', pcam.s > .95); }
+}
+// focus window: a sharp "window" on the selected person's room (or the selected room); the rest is veiled
+let spotOn = false;
+const spotEl = $('#spot'), spotBox = {x: 0, y: 0, w: 0, h: 0, on: false, view: ''};
+function spotWorldBox() {
+  if (!spotOn || sel.type === 'none') return null;
+  const tower = view === 'tower';
+  let r = null;
+  if (sel.type === 'room') r = roomById[sel.id];
+  else {
+    const a = A[sel.id];
+    if (!inBuilding(a)) r = a.home.r;
+    else if (a.inCar) return tower ? {x: a.inCar.x - 34, y: a.inCar.y - 10, w: 68, h: RH} : null;
+    else {
+      r = roomAtPlan(a.f, a.x, a.y);
+      if (!r) return tower ? {x: a.tx - 110, y: floorTop(a.f) - 4, w: 220, h: RH + 8} : (a.f === planFloor ? {x: a.x - 130, y: SP_Y - 24, w: 260, h: SP_H + 48} : null);
+    }
+  }
+  if (tower) return {x: r.tx - 4, y: floorTop(r.f) - 4, w: r.tw + 8, h: RH + 8};
+  return r.f === planFloor ? {x: r.x - 6, y: r.y - 6, w: r.w + 12, h: r.h + 12} : null;
+}
+function updateSpot() {
+  const b = spotWorldBox();
+  if (!b) { if (!spotEl.hidden) spotEl.hidden = true; spotBox.on = false; return; }
+  if (!spotBox.on || spotBox.view !== view) Object.assign(spotBox, b, {on: true, view});
+  else { const k = .25; spotBox.x += (b.x - spotBox.x) * k; spotBox.y += (b.y - spotBox.y) * k; spotBox.w += (b.w - spotBox.w) * k; spotBox.h += (b.h - spotBox.h) * k; }
+  const c = curCam(), v = avail();
+  spotEl.hidden = false;
+  spotEl.style.setProperty('--sx', (v.cx + (spotBox.x - c.x) * c.s).toFixed(1) + 'px');
+  spotEl.style.setProperty('--sy', (v.cy + (spotBox.y - c.y) * c.s).toFixed(1) + 'px');
+  spotEl.style.setProperty('--sw', (spotBox.w * c.s).toFixed(1) + 'px');
+  spotEl.style.setProperty('--sh', (spotBox.h * c.s).toFixed(1) + 'px');
 }
 let drag = null;
 const inScene = t => world.contains(t) || planEl.contains(t) || t === stage;
@@ -1409,7 +1475,7 @@ function hoverHTML(t) {
       <div class="row">${avHTML(a.id)}<div><b>${esc(a.id === 'avi' ? 'Avi (you)' : PEOPLE[a.id].name)}</b><p>${esc(PEOPLE[a.id].role)}</p></div></div>
       <span class="act"><i class="dot ${a.status}"></i>${esc(STATUS_LABEL[a.status])} · ${esc(ac.text)}</span>
       ${ac.hidden ? `<p>${esc(first(a.id))} keeps their details private.</p>` : `<p>${esc(where(a))}</p>`}
-      <small>Click for details · double-click to follow</small>`;
+      <small>Click to focus on them and follow</small>`;
   }
   if (t.type === 'room') {
     const r = roomById[t.id], k = roomKind(r);
@@ -1573,55 +1639,152 @@ async function incoming(id, text) {
   removeBot(b);
   return {found, floor, toastShown: shown};
 }
-async function walkOver(id) {
-  const t = A[id], t0 = simClock;
-  const res = {reached: false, floor: null, minutes: 0};
-  await act(me, async () => {
-    releaseSeat(me); followIf(me, 1.3); me.dest = PEOPLE[id].name;
-    res.reached = await chase(me, t, 70); res.floor = me.f;
-    me.el.classList.add('talking');
-    if (t.status === 'focus') { await wait(1200); logActivity(`You knocked on ${first(id)}'s door. Do not disturb is on.`); }
-    else { t.el.classList.add('talking'); await wait(4800); t.el.classList.remove('talking'); }
-    me.el.classList.remove('talking');
-    await goHome(me);
-    if (cam.follow === me) cam.follow = null;
+// conversations: one at a time. Each person in it is either on the phone (stays where they are)
+// or here in person (gathered with you). Call adds by phone, Invite over brings them to you,
+// Walk over takes you to them. Inviting someone you're on the phone with hangs up and they walk over.
+let convo = null;
+const convoPhone = () => !!convo && [...convo.members.values()].some(m => m.mode === 'phone' && !m.ringing);
+function ensureConvo() { if (!convo) convo = {members: new Map(), t0: simClock, G: null, slots: 0}; return convo; }
+function convoSummary() {
+  if (!convo) return '';
+  const here = [], phone = [];
+  convo.members.forEach((m, id) => (m.mode === 'here' ? here : phone).push(first(id) + (m.ringing ? ' (ringing)' : '')));
+  return [here.length ? `${here.join(', ')} with you` : '', phone.length ? `${phone.join(', ')} on the phone` : ''].filter(Boolean).join(' · ');
+}
+function refreshConvo() {
+  [...links.keys()].forEach(k => { if (k.startsWith('call-')) links.delete(k); });
+  Object.values(A).forEach(a => { if (a.callWith === 'avi' && !(convo && convo.members.has(a.id))) a.callWith = null; });
+  let talking = false, ringIn = false;
+  if (convo) convo.members.forEach((m, id) => {
+    const a = A[id];
+    if (m.mode === 'phone') {
+      links.set('call-' + id, {a: me, b: a, kind: m.ringing ? 'ring' : 'call'});
+      a.el.classList.toggle('onphone', !m.ringing || m.dir === 'in');
+      a.el.classList.toggle('ringing', !!m.ringing && m.dir === 'out');
+      a.el.classList.remove('talking');
+      if (m.ringing && m.dir === 'in') ringIn = true;
+    } else { a.el.classList.remove('onphone', 'ringing'); a.el.classList.toggle('talking', !!m.arrived); if (m.arrived) talking = true; }
   });
-  res.minutes = (simClock - t0) / 60;
-  logActivity(`Walked to ${first(id)} and back: ${res.minutes.toFixed(0)} min away from your desk.`);
+  me.el.classList.toggle('onphone', convoPhone());
+  me.el.classList.toggle('ringing', ringIn);
+  me.el.classList.toggle('talking', talking);
+  renderLive(); renderSoft();
+}
+function gatherPoint() {
+  if (convo.G) return convo.G;
+  const r = me.home.r;
+  if (atHome(me)) convo.G = {f: r.f, r, x: r.x + r.w / 2, y: r.row === 'top' ? r.y + 168 : r.y + r.h - 168};
+  else convo.G = {f: me.f, r: roomAtPlan(me.f, me.x, me.y), x: me.x, y: me.y};
+  return convo.G;
+}
+function ringSpot(G, i) {
+  const ang = [200, 160, 240, 120, 280, 80, 320, 40][i % 8] * Math.PI / 180, rad = 44 + Math.floor(i / 8) * 30;
+  let x = G.x + Math.sin(ang) * rad, y = G.y - Math.cos(ang) * rad;
+  if (G.r) { x = clamp(x, G.r.x + 18, G.r.x + G.r.w - 18); y = clamp(y, G.r.y + 18, G.r.y + G.r.h - 18); } else y = clamp(y, SP_Y + 12, SP_Y + SP_H - 12);
+  return {x, y};
+}
+function faceTo(a, p) { a.face = Math.atan2(p.x - a.x, -(p.y - a.y)) * 180 / Math.PI; a.tfacing = p.x >= a.x ? 1 : -1; }
+async function meetAt(G) {
+  if (me.f === G.f && Math.hypot(me.x - G.x, me.y - G.y) < 4) return;
+  releaseSeat(me);
+  await act(me, () => goTo(me, G.f, {x: G.x, y: G.y}, G.r));
+}
+async function inviteOver(ids) {
+  const res = {arrived: [], declined: []};
+  ensureConvo(); const G = gatherPoint();
+  const meMove = meetAt(G);
+  await Promise.all(ids.map(async id => {
+    const a = A[id];
+    if (a.status === 'focus' || !inBuilding(a)) {
+      res.declined.push(id);
+      logActivity(`${first(id)} can't come over: ${a.status === 'focus' ? 'Do not disturb is on' : STATUS_LABEL[a.status].toLowerCase()}.${a.status === 'offsite' ? ' Call them instead.' : ''}`);
+      return;
+    }
+    if (a.callWith && a.callWith !== 'avi') endNpcCall(a);
+    const prev = convo.members.get(id);
+    if (prev && prev.mode === 'here') { res.arrived.push(id); return; }
+    if (prev && prev.mode === 'phone') logActivity(`${first(id)} hung up and is walking over.`);
+    const m = {mode: 'here', arrived: false, t0: prev ? prev.t0 : simClock};
+    convo.members.set(id, m); a.callWith = null; a.busy = true;
+    refreshConvo();
+    releaseSeat(a); a.dest = 'you';
+    const spot = ringSpot(G, convo.slots++);
+    await act(a, () => goTo(a, G.f, spot, G.r));
+    if (convo && convo.members.get(id) === m) { m.arrived = true; faceTo(a, G); res.arrived.push(id); refreshConvo(); }
+  }));
+  await meMove;
+  if (convo && res.arrived.length) faceTo(me, A[res.arrived[0]]);
+  if (convo && !convo.members.size) await endConvo(true);
   return res;
 }
-
-// calls
-let callEnded = null;
-function startCallVisual(id, ringing) {
-  const t = A[id];
-  links.set('call', {a: me, b: t, kind: ringing ? 'ring' : 'call'});
-  [me, t].forEach(a => a.el.classList.toggle('onphone', !ringing));
-  t.el.classList.toggle('ringing', !!ringing && live.call && live.call.dir === 'out');
-  me.el.classList.toggle('ringing', !!ringing && live.call && live.call.dir === 'in');
+async function walkOver(id) {
+  const t = A[id], t0 = simClock, res = {reached: false, floor: null, minutes: 0};
+  ensureConvo();
+  [...convo.members.entries()].forEach(([k, m]) => { if (m.mode === 'here' && k !== id) dropMember(k, true); });
+  ensureConvo();
+  const prev = convo.members.get(id);
+  if (prev && prev.mode === 'phone') logActivity(`You hung up with ${first(id)} and are walking over.`);
+  const m = {mode: 'here', arrived: false, t0: prev ? prev.t0 : simClock};
+  convo.members.set(id, m); convo.G = null; t.callWith = null; t.busy = true;
+  refreshConvo();
+  await act(me, async () => {
+    releaseSeat(me); followIf(me, 1.3); me.dest = PEOPLE[id].name;
+    res.reached = await chase(me, t, 50); res.floor = me.f;
+  });
+  if (cam.follow === me && !following) cam.follow = null;
+  if (!convo || convo.members.get(id) !== m) return res;
+  if (t.status === 'focus') { logActivity(`You knocked on ${first(id)}'s door. Do not disturb is on.`); dropMember(id, true); return res; }
+  convo.G = {f: me.f, r: roomAtPlan(me.f, me.x, me.y), x: (me.x + t.x) / 2, y: (me.y + t.y) / 2}; convo.slots = 2;
+  m.arrived = true; faceTo(me, t); faceTo(t, me); refreshConvo();
+  res.minutes = (simClock - t0) / 60;
+  logActivity(`You walked over to ${first(id)} (${res.minutes.toFixed(0)} min from your desk).`);
+  return res;
+}
+function dropMember(id, quiet) {
+  if (!convo || !convo.members.has(id)) return;
+  const m = convo.members.get(id), a = A[id];
+  convo.members.delete(id); a.callWith = null; a.el.classList.remove('onphone', 'ringing', 'talking');
+  if (m.card) closeCard(m.card);
+  if (m.mode === 'here') act(a, async () => { await goHome(a); a.busy = false; }); else a.busy = false;
+  if (!quiet) logActivity(`${first(id)} left the conversation.`);
+  if (!convo.members.size) endConvo(true); else refreshConvo();
+}
+async function endConvo(quiet) {
+  if (!convo) return;
+  const c = convo; convo = null;
+  const back = [];
+  c.members.forEach((m, id) => {
+    const a = A[id]; a.callWith = null; a.el.classList.remove('onphone', 'ringing', 'talking');
+    if (m.card) closeCard(m.card);
+    if (m.mode === 'here') back.push(act(a, async () => { await goHome(a); a.busy = false; })); else a.busy = false;
+  });
+  if (!atHome(me) && !(live.meeting && live.meeting.mode === 'walk')) back.push(act(me, () => goHome(me)));
+  refreshConvo();
+  if (!quiet) logActivity(`Conversation ended · ${fmtT((simClock - c.t0) / 12)}`);
+  await Promise.all(back);
 }
 async function call(id, {autoEnd = 0} = {}) {
-  if (live.call) endCall(true);
   const t = A[id], res = {accepted: false, reason: null, linked: false};
+  if (convo && convo.members.has(id)) return {accepted: true, reason: 'already', linked: true};
   if (t.status === 'offline') { logActivity(`${first(id)} is offline. Couldn't call.`); res.reason = 'offline'; return res; }
   if (t.callWith) { showCard({id: ++nid, kind: 'info', from: id, title: `${first(id)} is on another call`, text: activity(t).text + '. Try a message, or call again later.', actions: []}); res.reason = 'busy'; return res; }
-  live.call = {id, dir: 'out', ringing: true, t0: null}; renderLive();
-  startCallVisual(id, true); res.linked = true;
+  ensureConvo();
+  const m = {mode: 'phone', ringing: true, dir: 'out', t0: simClock};
+  convo.members.set(id, m); t.busy = true;
+  refreshConvo(); res.linked = true;
   frameBox([{x: me.tx, y: me.ty}, {x: t.tx, y: t.ty}]);
   await wait(1800);
-  if (!live.call || live.call.id !== id) return res;
+  if (!convo || convo.members.get(id) !== m) return res;
   if (t.status === 'focus') {
     res.reason = 'focus'; logActivity(`${first(id)} declined automatically (Do not disturb).`);
     showCard({id: ++nid, kind: 'info', from: id, title: `${first(id)} has Do not disturb on`, text: 'The call was declined automatically. Send a message instead?', actions: [{label: 'Send message', primary: true, fn: () => select({type: 'person', id})}]});
-    endCall(true); return res;
+    dropMember(id, true); return res;
   }
-  connectCall(); res.accepted = true;
-  const ended = new Promise(r => callEnded = r);
-  if (!autoEnd) return res;
-  await wait(autoEnd); endCall();
-  await ended; return res;
+  m.ringing = false; t.callWith = 'avi'; res.accepted = true; refreshConvo();
+  logActivity(convo.members.size > 1 ? `${PEOPLE[id].name} joined the call.` : `Call with ${PEOPLE[id].name} started.`);
+  if (autoEnd) { await wait(autoEnd); await endConvo(); }
+  return res;
 }
-function connectCall() { live.call.ringing = false; live.call.t0 = simClock; startCallVisual(live.call.id, false); renderLive(); }
 async function incomingCall(id, {answerAfter = 0, decline = false} = {}) {
   const t = A[id], res = {carded: false, accepted: false, autoDeclined: false};
   if (me.status === 'focus') {
@@ -1630,30 +1793,23 @@ async function incomingCall(id, {answerAfter = 0, decline = false} = {}) {
     logActivity(`Missed a call from ${first(id)} (Do not disturb).`);
     return res;
   }
-  if (live.call) endCall(true);
-  live.call = {id, dir: 'in', ringing: true, t0: null}; renderLive();
-  startCallVisual(id, true); t.el.classList.add('onphone');
-  const {item} = notify({kind: 'call', from: id, title: `${first(id)} is calling`, text: '', sticky: true, actions: [
-    {label: 'Answer', primary: true, fn: () => { if (live.call && live.call.id === id) { connectCall(); res.accepted = true; } }},
-    {label: 'Decline', danger: true, fn: () => { endCall(true); logActivity(`You declined ${first(id)}'s call.`); }},
-    {label: 'Message instead', fn: () => { endCall(true); select({type: 'person', id}); }},
+  if (convo && convo.members.has(id)) return res;
+  if (t.callWith) endNpcCall(t);
+  ensureConvo();
+  const m = {mode: 'phone', ringing: true, dir: 'in', t0: simClock};
+  convo.members.set(id, m); t.busy = true; refreshConvo();
+  const {item} = notify({kind: 'call', from: id, title: `${first(id)} is calling`, text: convo.members.size > 1 ? 'Answering adds them to your conversation.' : '', sticky: true, actions: [
+    {label: 'Answer', primary: true, fn: () => { if (convo && convo.members.get(id) === m) { m.ringing = false; m.card = null; t.callWith = 'avi'; res.accepted = true; refreshConvo(); logActivity(`You answered ${PEOPLE[id].name}.`); } }},
+    {label: 'Decline', danger: true, fn: () => { m.card = null; dropMember(id, true); logActivity(`You declined ${first(id)}'s call.`); }},
+    {label: 'Message instead', fn: () => { m.card = null; dropMember(id, true); select({type: 'person', id}); }},
   ]});
-  res.carded = cards.has(item.id);
+  m.card = item.id; res.carded = cards.has(item.id);
   if (answerAfter) { await wait(answerAfter); const c = cards.get(item.id); if (c) c.querySelector(decline ? '[data-i="1"]' : '[data-i="0"]').click(); }
   else {
     await wait(12000);
-    if (live.call && live.call.ringing && live.call.id === id) { closeCard(item.id); endCall(true); notify({kind: 'missed', from: id, title: `Missed call from ${first(id)}`, text: '', actions: [{label: 'Call back', primary: true, fn: () => call(id)}]}); }
+    if (convo && convo.members.get(id) === m && m.ringing) { dropMember(id, true); notify({kind: 'missed', from: id, title: `Missed call from ${first(id)}`, text: '', actions: [{label: 'Call back', primary: true, fn: () => call(id)}]}); }
   }
   return res;
-}
-function endCall(silent) {
-  if (!live.call) return;
-  const t = A[live.call.id];
-  [me, t].forEach(a => a.el.classList.remove('onphone', 'ringing'));
-  links.delete('call');
-  if (!silent && !live.call.ringing) logActivity(`Call with ${first(t.id)} ended · ${fmtT((simClock - live.call.t0) / 12)}`);
-  live.call = null; renderLive();
-  if (callEnded) { callEnded(); callEnded = null; }
 }
 // colleagues calling each other, so "who is on a call with whom" is visible
 function npcCall(a, b, ms) {
@@ -1661,8 +1817,13 @@ function npcCall(a, b, ms) {
   logActivity(`${PEOPLE[a.id].name} started a call with ${PEOPLE[b.id].name}.`);
   wait(ms).then(() => { if (a.callWith === b.id) endNpcCall(a); });
 }
-function endNpcCall(a) { const b = A[a.callWith]; a.callWith = null; a.el.classList.remove('onphone'); if (b) { b.callWith = null; b.el.classList.remove('onphone'); } }
+function endNpcCall(a) {
+  if (a.callWith === 'avi') { dropMember(a.id, true); return; }
+  const b = A[a.callWith]; a.callWith = null; a.el.classList.remove('onphone');
+  if (b) { b.callWith = null; b.el.classList.remove('onphone'); }
+}
 
+// meetings
 // meetings
 function roomMeetingUI(r) {
   r.el.classList.toggle('live', !!r.meeting);
@@ -1716,27 +1877,6 @@ async function leaveMeeting(r) {
   else { if (r.meeting) { r.meeting.ids.delete('avi'); r.meeting.walked = false; } await act(me, () => goHome(me)); }
   renderSoft();
 }
-// huddle in your office
-async function inviteHuddle(ids) {
-  const r = officeOf('avi'), res = {arrived: [], declined: []};
-  if (!live.huddle) { live.huddle = new Set(); live.huddle.t0 = simClock; }
-  r.el.classList.add('huddle'); renderLive();
-  await Promise.all(ids.map(async id => {
-    const a = A[id];
-    if (a.status === 'focus' || !inBuilding(a)) { res.declined.push(id); logActivity(`${first(id)} can't join the huddle: ${a.status === 'focus' ? 'Do not disturb' : STATUS_LABEL[a.status].toLowerCase()}.`); return; }
-    if (a.callWith) endNpcCall(a);
-    await act(a, async () => { a.busy = true; await goSeat(a, r); });
-    if (live.huddle) { live.huddle.add(id); renderLive(); }
-    res.arrived.push(id);
-  }));
-  return res;
-}
-async function endHuddle() {
-  if (!live.huddle) return;
-  const ids = [...live.huddle]; live.huddle = null; renderLive();
-  officeOf('avi').el.classList.remove('huddle');
-  await Promise.all(ids.map(id => act(A[id], async () => { await goHome(A[id]); A[id].busy = false; })));
-}
 // music room
 function setDJ(id) { music.dj = id; music.since = simClock; roomById.music.el.classList.toggle('music-on', !!id); roomById.music.fr.classList.toggle('music-on', !!id); }
 function listenIn() {
@@ -1763,25 +1903,25 @@ function gameActivities() {
 function renderLive() {
   const parts = [];
   if (following) parts.push(`<div class="livechip follow">${IC.eye.replace('<svg', '<svg width="14" height="14"')}Following ${esc(following.id === 'avi' ? 'yourself' : first(following.id))} <span class="sub" data-t="follow"></span><button type="button" data-end="follow">Stop</button></div>`);
-  if (live.call) parts.push(`<div class="livechip"><i class="pulse"></i>${live.call.ringing ? (live.call.dir === 'in' ? 'Incoming from' : 'Calling') : 'On call with'} ${esc(first(live.call.id))} <span class="t" data-t="call"></span><button type="button" data-end="call">${live.call.ringing && live.call.dir === 'in' ? 'Decline' : 'End'}</button></div>`);
+  if (convo && convo.members.size) {
+    const ms = [...convo.members.values()], allRing = ms.every(m => m.ringing), inRing = ms.some(m => m.ringing && m.dir === 'in');
+    parts.push(`<div class="livechip"><i class="pulse"></i>${allRing ? (inRing ? 'Incoming call' : 'Calling') : 'Conversation'} <span class="sub">${esc(convoSummary())}</span> <span class="t" data-t="convo"></span><button type="button" data-end="convo">${allRing && inRing ? 'Decline' : 'End'}</button></div>`);
+  }
   if (live.meeting) parts.push(`<div class="livechip"><i class="pulse"></i>${esc(live.meeting.r.meeting ? live.meeting.r.meeting.title : '')} · ${live.meeting.mode === 'audio' ? 'audio from your desk' : 'in the room'} <span class="t" data-t="meeting"></span><button type="button" data-end="meeting">Leave</button></div>`);
   if (live.listen) parts.push(`<div class="livechip">${IC.music.replace('<svg', '<svg width="14" height="14"')}Listening · Music room <span class="t" data-t="listen"></span><button type="button" data-end="listen">Stop</button></div>`);
-  if (live.huddle) parts.push(`<div class="livechip"><i class="pulse"></i>Huddle in your office · ${live.huddle.size} joined <span class="t" data-t="huddle"></span><button type="button" data-end="huddle">End</button></div>`);
   $('#live').innerHTML = parts.join('');
 }
 $('#live').addEventListener('click', e => {
   const k = e.target.dataset && e.target.dataset.end;
-  if (k === 'call') endCall();
+  if (k === 'convo') endConvo();
   if (k === 'meeting' && live.meeting) leaveMeeting(live.meeting.r);
-  if (k === 'huddle') endHuddle();
   if (k === 'listen') stopListening();
   if (k === 'follow') stopFollow();
 });
 function tickLive() {
   const set = (k, t0) => { const n = $(`#live [data-t="${k}"]`); if (n && t0 != null) n.textContent = fmtT((simClock - t0) / 12); };
-  if (live.call) set('call', live.call.t0);
+  if (convo) set('convo', convo.t0);
   if (live.meeting) set('meeting', live.meeting.t0);
-  if (live.huddle) set('huddle', live.huddle.t0);
   if (live.listen) set('listen', live.listen.t0);
   if (following) { const n = $('#live [data-t="follow"]'); if (n) n.textContent = '· ' + activity(following).text; }
 }
@@ -1791,7 +1931,7 @@ function updatePins() {
   const box = $('#pins');
   if (view !== 'tower') { if (box.innerHTML) box.innerHTML = ''; return; }
   const ids = new Set(Object.keys(unread).filter(id => unread[id] > 0));
-  if (live.call) ids.add(live.call.id);
+  if (convo) convo.members.forEach((m, id) => { if (m.mode === 'phone') ids.add(id); });
   const v = avail(), out = [];
   ids.forEach(id => {
     const a = A[id]; if (!a || !inBuilding(a)) return;
@@ -1800,7 +1940,7 @@ function updatePins() {
     if (sx > minX && sx < maxX && sy > minY && sy < maxY) return;
     const cx = clamp(sx, minX, maxX), cy = clamp(sy, minY, maxY);
     const ang = Math.atan2(sy - cy, sx - cx) * 180 / Math.PI;
-    out.push(`<button type="button" class="pin ${live.call && live.call.id === id ? 'call' : ''}" data-pin="${id}" style="left:${cx.toFixed(0)}px;top:${cy.toFixed(0)}px" title="${esc(PEOPLE[id].name)} · ${esc(where(a))}">${avHTML(id)}${esc(first(id))}<i class="arr" style="transform:rotate(${ang.toFixed(0)}deg)"></i></button>`);
+    out.push(`<button type="button" class="pin ${convo && convo.members.has(id) ? 'call' : ''}" data-pin="${id}" style="left:${cx.toFixed(0)}px;top:${cy.toFixed(0)}px" title="${esc(PEOPLE[id].name)} · ${esc(where(a))}">${avHTML(id)}${esc(first(id))}<i class="arr" style="transform:rotate(${ang.toFixed(0)}deg)"></i></button>`);
   });
   const html = out.join(''); if (box.innerHTML !== html) box.innerHTML = html;
 }
@@ -1813,7 +1953,7 @@ function idleTick(dt) {
   if (scenarioRunning) return;
   if (idleClock > 3.2) {
     idleClock = 0;
-    const pool = Object.values(A).filter(a => a.id !== 'avi' && a.status === 'active' && !a.busy && !a.callWith && atHome(a) && !(live.call && live.call.id === a.id) && a !== following);
+    const pool = Object.values(A).filter(a => a.id !== 'avi' && a.status === 'active' && !a.busy && !a.callWith && atHome(a) && !(convo && convo.members.has(a.id)) && a !== following);
     if (pool.length) {
       const a = pool[Math.floor(Math.random() * pool.length)];
       const same = floorRooms[a.home.f].filter(r => ['pantry', 'wc', 'lounge', 'print'].includes(r.type));
@@ -1837,12 +1977,22 @@ const pb = $('#pb');
 const avHTML = id => `<span class="av" style="background:${PEOPLE[id].shirt}">${initials(PEOPLE[id].name)}<i class="dot ${A[id].status}"></i></span>`;
 function setTab(t) { tab = t; document.querySelectorAll('.tabs [data-tab]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t)); renderInsp(); }
 document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b && !b.disabled) setTab(b.dataset.tab); });
-function select(s) {
+function select(s, {focus = true} = {}) {
   document.querySelectorAll('.actor.sel').forEach(n => n.classList.remove('sel'));
   document.querySelectorAll('.room.sel').forEach(n => n.classList.remove('sel'));
   sel = s;
-  if (s.type === 'person') { A[s.id].el.classList.add('sel'); if (unread[s.id]) { unread[s.id] = 0; inbox.filter(n => n.from === s.id && n.kind === 'dm').forEach(n => n.unread = false); renderInboxCount(); } }
-  if (s.type === 'room') roomById[s.id].el.classList.add('sel');
+  if (s.type === 'person') {
+    const a = A[s.id];
+    a.el.classList.add('sel');
+    if (unread[s.id]) { unread[s.id] = 0; inbox.filter(n => n.from === s.id && n.kind === 'dm').forEach(n => n.unread = false); renderInboxCount(); }
+    if (focus) {
+      spotOn = true;
+      if (inBuilding(a)) startFollow(a, true);
+      else { stopFollow(true); if (view === 'tower') focusRoom(a.home.r); else openPlan(a.home.f); }
+    }
+  } else if (focus) stopFollow(true);
+  if (s.type === 'room') { roomById[s.id].el.classList.add('sel'); if (focus) spotOn = true; }
+  if (s.type === 'none') spotOn = false;
   document.querySelector('[data-tab="detail"]').disabled = s.type === 'none';
   syncPlanRoomStates();
   setTab(s.type === 'none' ? 'inbox' : 'detail');
@@ -1868,11 +2018,13 @@ function renderInsp() {
       <button type="button" class="prow" data-person="${a.id}">${avHTML(a.id)}<span class="meta"><b>${esc(a.id === 'avi' ? 'Avi (you)' : PEOPLE[a.id].name)}</b><span data-live="act-${a.id}">${esc(activity(a).text)}</span></span>${unread[a.id] ? `<span class="unread">${unread[a.id]}</span>` : ''}</button>`).join('')}</div>`).join('');
   } else if (sel.type === 'person') {
     const a = A[sel.id], id = sel.id, mine = id === 'avi', st = a.status, out = !inBuilding(a);
-    const acts = mine ? '' : `<div class="acts">
+    const cm = convo && convo.members.get(id);
+    const acts = mine ? (convo ? `<div class="acts"><button type="button" class="act primary wide" data-do="endconvo">${IC.close}<span>End conversation<small>${esc(convoSummary())}</small></span></button></div>` : '') : `<div class="acts">
       <button type="button" class="act primary" data-do="msg">${IC.send}<span>Send message<small>Instant</small></span></button>
-      <button type="button" class="act" data-do="call" ${st === 'offline' ? 'disabled' : ''}>${IC.phone}<span>Call<small>Stay at your desk</small></span></button>
-      <button type="button" class="act" data-do="walk" ${out ? 'disabled' : ''}>${IC.walk}<span>Walk over<small>Leave your office</small></span></button>
-      <button type="button" class="act" data-do="huddle" ${out ? 'disabled' : ''}>${IC.users}<span>Invite to huddle<small>They come to you</small></span></button></div>`;
+      <button type="button" class="act" data-do="call" ${st === 'offline' || cm ? 'disabled' : ''}>${IC.phone}<span>${cm ? (cm.mode === 'phone' ? 'On the call' : 'Talking now') : convo ? 'Add to call' : 'Call'}<small>${convo && !cm ? 'Joins your conversation' : 'They stay where they are'}</small></span></button>
+      <button type="button" class="act" data-do="invite" ${out || (cm && cm.mode === 'here') ? 'disabled' : ''}>${IC.users}<span>Invite over<small>${cm && cm.mode === 'phone' ? 'Hang up, they come to you' : 'They come to you'}</small></span></button>
+      <button type="button" class="act" data-do="walk" ${out || (cm && cm.mode === 'here') ? 'disabled' : ''}>${IC.walk}<span>Walk over<small>You go to them</small></span></button>
+      ${cm ? `<button type="button" class="act wide" data-do="drop">${IC.close}<span>Remove from conversation</span></button>` : ''}</div>`;
     pb.innerHTML = `<div class="who">${avHTML(id)}<div><b>${esc(mine ? 'Avi (you)' : PEOPLE[id].name)}</b><span>${esc(PEOPLE[id].role)} · ${esc(FLOOR[a.home.f].name)}</span></div></div>
       ${statusBox(a)}${acts}
       <div class="acts"><button type="button" class="act" data-do="follow" ${out ? 'disabled' : ''}>${IC.eye}<span>${following === a ? 'Stop following' : 'Follow'}<small>Camera stays on them</small></span></button>
@@ -1926,7 +2078,9 @@ pb.addEventListener('click', e => {
     if (d === 'msg') sendMessage(id, defaultMsg());
     if (d === 'call') call(id);
     if (d === 'walk') walkOver(id);
-    if (d === 'huddle') inviteHuddle([id]);
+    if (d === 'invite') inviteOver([id]);
+    if (d === 'drop') dropMember(id);
+    if (d === 'endconvo') endConvo();
     if (d === 'follow') { following === A[id] ? stopFollow() : startFollow(A[id]); renderInsp(); }
   } else if (sel.type === 'room') {
     const r = roomById[sel.id];
@@ -1968,7 +2122,7 @@ function renderRail(force) {
 }
 $('#floors').addEventListener('click', e => {
   const b = e.target.closest('[data-floor]'); if (!b) return;
-  const f = +b.dataset.floor; stopFollow(true);
+  const f = +b.dataset.floor; stopFollow(true); spotOn = false;
   if (view === 'plan') { openPlan(f); return; }
   if (currentFloor() === f) openPlan(f); else focusFloor(f);
 });
@@ -2016,11 +2170,10 @@ addEventListener('keydown', e => {
 
 // ================= scenarios (scripted tests) =================
 async function settle() {
-  endCall(true); stopFollow(true); stopListening();
+  await endConvo(true); stopFollow(true); stopListening(); spotOn = false;
   cards.forEach((c, id) => closeCard(id));
   Object.values(A).forEach(a => { if (a.callWith) endNpcCall(a); });
   for (const r of rooms) if (r.meeting) await endMeeting(r);
-  await endHuddle();
   if (me.status !== 'active') await setStatus('avi', 'active');
   await Promise.all(Object.values(A).map(a => a.q));
   if (!atHome(me)) await act(me, () => goHome(me));
@@ -2079,9 +2232,28 @@ const SCEN = [
   {id: 'in-call', title: 'Incoming call', desc: 'Femi calls you. A ringing card appears with Answer, Decline, Message instead.', run: async c => {
     const r = await incomingCall('femi', {answerAfter: 1500});
     c.check('Ringing card shown', r.carded);
-    c.check('Answered from the card', r.accepted && live.call && !live.call.ringing);
-    await wait(2000); endCall();
-    c.check('Call ended cleanly', !live.call);
+    c.check('Answered from the card', r.accepted && convoPhone());
+    await wait(2000); await endConvo();
+    c.check('Call ended cleanly', !convo && !me.el.classList.contains('onphone'));
+  }},
+  {id: 'multi-call', title: 'Call several people', desc: 'Call Kemi, then add Uche and Chidi from other floors. Everyone stays where they are.', run: async c => {
+    const ids = ['kemi', 'uche', 'chidi'], pos = ids.map(id => ({id, f: A[id].f, x: A[id].x, y: A[id].y}));
+    for (const id of ids) await call(id);
+    c.check('One conversation, three people on the phone', convo && convo.members.size === 3 && [...convo.members.values()].every(m => m.mode === 'phone' && !m.ringing));
+    c.check('All three hold phones', ids.every(id => A[id].el.classList.contains('onphone')));
+    c.check('Nobody moved', pos.every(p => A[p.id].f === p.f && near(A[p.id], p, 2)) && atHome(me));
+    await endConvo();
+    c.check('Ending hangs up everyone', ids.every(id => !A[id].callWith && !A[id].el.classList.contains('onphone')));
+  }},
+  {id: 'convert', title: 'Turn a call into a chat in person', desc: 'On a call with Femi, press Invite over. He hangs up and comes to you; it stays one conversation.', run: async c => {
+    await call('femi');
+    c.check('On the phone with Femi', convo && convo.members.get('femi') && convo.members.get('femi').mode === 'phone');
+    const r = await inviteOver(['femi']);
+    c.check('Both phones are down', !A.femi.el.classList.contains('onphone') && !me.el.classList.contains('onphone'));
+    c.check('Still one conversation, Femi now in person', convo && convo.members.size === 1 && convo.members.get('femi').mode === 'here');
+    c.check('He came to your office and you got up to meet him', r.arrived.includes('femi') && roomAtPlan(A.femi.f, A.femi.x, A.femi.y) === me.home.r && !atHome(me) && Math.hypot(me.x - A.femi.x, me.y - A.femi.y) < 70);
+    await endConvo();
+    c.check('Everyone back at their desks', atHome(me) && atHome(A.femi));
   }},
   {id: 'focus', title: 'Do not disturb holds notifications', desc: 'A message and a call arrive while you focus; one summary when you\'re back.', run: async c => {
     await setStatus('avi', 'focus');
@@ -2135,13 +2307,17 @@ const SCEN = [
     c.check('Front rows filled first', inHall.filter(id => A[id].seat.s.sit).every(id => A[id].seat.s.y >= r.y + r.h - 200));
     await endMeeting(r);
   }},
-  {id: 'huddle', title: 'Desk huddle', desc: 'Invite Kemi, Femi and Dayo. Anyone free walks over; Do not disturb declines.', run: async c => {
+  {id: 'invite', title: 'Invite several people over', desc: 'Invite Kemi, Joy and Dayo. Free people come and stand with you; Do not disturb declines. Then add Uche by phone.', run: async c => {
     await setStatus('dayo', 'focus');
-    const r = await inviteHuddle(['kemi', 'femi', 'dayo']);
-    c.check('Kemi and Femi walked to your office', r.arrived.includes('kemi') && r.arrived.includes('femi'));
+    const r = await inviteOver(['kemi', 'joy', 'dayo']);
+    c.check('Kemi and Joy came over', r.arrived.includes('kemi') && r.arrived.includes('joy'));
     c.check('Dayo declined (Do not disturb)', r.declined.includes('dayo'));
-    await wait(3000); await endHuddle();
-    c.check('Everyone went back', atHome(A.kemi) && atHome(A.femi));
+    c.check('You left your desk and stand together', !atHome(me) && ['kemi', 'joy'].every(id => A[id].f === me.f && Math.hypot(A[id].x - me.x, A[id].y - me.y) < 80));
+    await call('uche');
+    const u = convo && convo.members.get('uche');
+    c.check('Uche joined the same conversation by phone', !!u && u.mode === 'phone' && !u.ringing && convo.members.size === 3);
+    await wait(2000); await endConvo();
+    c.check('Everyone went back', atHome(me) && atHome(A.kemi) && atHome(A.joy) && !A.uche.callWith);
   }},
   {id: 'walls', title: 'People use doors, not walls', desc: 'Wale walks from the Eng bay to the cafeteria and back. Every step must be in a room he is leaving or entering, a doorway, the corridor or the lift.', run: async c => {
     const a = A.wale, from = roomAtPlan(a.f, a.x, a.y), to = roomById.random;
@@ -2184,11 +2360,27 @@ const SCEN = [
     c.check('Person hint: name, status and activity', ps.includes('Kemi Adeyemi') && ps.includes('Active'));
     hideHover();
   }},
-  {id: 'walk', title: 'Walk over vs. message', desc: 'Walk to Chidi on F3 and back, and see how long you were away from your desk.', run: async c => {
+  {id: 'walk', title: 'Walk over', desc: 'Walk to Chidi on F3. You end up right next to him and stay until you end the conversation.', run: async c => {
     const r = await walkOver('chidi');
     c.check('You reached Chidi on F3', r.reached && r.floor === 4);
-    c.check(`Away from desk for ${r.minutes.toFixed(0)} sim minutes (a message costs you 0)`, r.minutes > 0);
+    c.check('You are standing right next to him', Math.hypot(me.x - A.chidi.x, me.y - A.chidi.y) < 60);
+    c.check(`Talking in person (${r.minutes.toFixed(0)} sim minutes to get there)`, convo && convo.members.get('chidi') && convo.members.get('chidi').mode === 'here');
+    await wait(2500);
+    c.check('You stay until you end it', me.f === 4);
+    await endConvo();
     c.check('Back at your desk', atHome(me));
+  }},
+  {id: 'spot', title: 'Click to focus', desc: 'Click Kemi: the camera zooms in and follows her, and everything outside her room is dimmed and blurred.', run: async c => {
+    select({type: 'person', id: 'kemi'}); await wait(1500);
+    const inside = () => { const f = spotEl.querySelector('.frame').getBoundingClientRect(), k = A.kemi.el.getBoundingClientRect(), x = k.left + k.width / 2, y = k.top + k.height / 2; return x > f.left && x < f.right && y > f.top && y < f.bottom; };
+    c.check('Focus window is showing', !spotEl.hidden && spotEl.querySelector('.frame').getBoundingClientRect().width > 40);
+    c.check('Kemi is inside the window', inside());
+    c.check(`Camera zoomed in (${cam.s.toFixed(2)}x) and follows her`, cam.s >= 1.25 && following === A.kemi);
+    await act(A.kemi, () => goSeat(A.kemi, roomById['6-pantry-bot2'])); await wait(900);
+    c.check('The window moved with her to the kitchen', inside() && roomAtPlan(A.kemi.f, A.kemi.x, A.kemi.y) === roomById['6-pantry-bot2']);
+    select({type: 'none'}); await wait(300);
+    c.check('Clearing the selection removes the window', spotEl.hidden);
+    await act(A.kemi, () => goHome(A.kemi));
   }},
   {id: 'incoming', title: 'Incoming message', desc: 'Amaka messages you. The card is instant; her courier follows.', run: async c => {
     const r = await incoming('amaka', 'A customer on WhatsApp wants an install date. Can you check?');
@@ -2258,7 +2450,7 @@ function frame(now) {
   simClock += dt * SPEED * 12;
   Object.values(A).forEach(renderActor); bots.forEach(renderActor);
   if (view === 'tower') drawLinks(); else updatePlan();
-  updateCamera(dt); idleTick(dt);
+  updateCamera(dt); updateSpot(); idleTick(dt);
   slowAcc += dt;
   if (slowAcc > .3) { slowAcc = 0; liveTick(); tickLive(); updatePins(); renderRail(); $('#time').textContent = fmtClock(simClock); if (view === 'plan') { syncPlanRoomStates(); const pc = $('#planbar [data-pc]'); if (pc) { const n = Object.values(A).filter(a => a.f === planFloor && inBuilding(a) && !a.inCar).length; pc.textContent = `${n} ${n === 1 ? 'person' : 'people'} here`; } } }
   requestAnimationFrame(frame);
